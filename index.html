@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChemiLingo - College Chemistry Trainer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo">Cl</div>
+      <div>
+        <p class="logo-title">ChemiLingo</p>
+        <p class="logo-subtitle">Advanced Chemistry Bootcamp</p>
+      </div>
+    </div>
+    <nav>
+      <a href="#tracks">Tracks</a>
+      <a href="#practice">Practice</a>
+      <a href="#labs">Labs</a>
+      <a href="#leaderboard">Leaderboard</a>
+    </nav>
+    <button class="cta">Start Free Trial</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-text">
+        <p class="tag">Built for undergrads, MCAT prep & research labs</p>
+        <h1>Master college chemistry one streak at a time.</h1>
+        <p class="lead">
+          Bite-sized lessons, adaptive quizzes, and interactive labs designed with the rigor of a
+          college curriculum but the delight of Duolingo.
+        </p>
+        <div class="hero-actions">
+          <button class="cta">Begin placement test</button>
+          <button class="ghost">Preview a lesson</button>
+        </div>
+        <ul class="stats">
+          <li>
+            <p class="stat">175k+</p>
+            <p class="stat-label">Problems solved</p>
+          </li>
+          <li>
+            <p class="stat">4.9/5</p>
+            <p class="stat-label">Average student rating</p>
+          </li>
+          <li>
+            <p class="stat">16</p>
+            <p class="stat-label">Curated learning paths</p>
+          </li>
+        </ul>
+      </div>
+      <div class="hero-card">
+        <div class="streak">
+          <p>🔥 12 day streak</p>
+          <p class="streak-note">Keep it alive with one more module today!</p>
+        </div>
+        <div class="progress">
+          <p>Physical Chemistry Lab</p>
+          <div class="progress-bar">
+            <span style="width: 68%"></span>
+          </div>
+          <p class="progress-label">Module 6 of 9 complete</p>
+        </div>
+        <div class="lesson-preview">
+          <p class="label">Up next</p>
+          <h3>Thermodynamics: Gibbs Free Energy</h3>
+          <p class="description">
+            Learn how ΔG predicts spontaneity, then run a simulated calorimetry experiment.
+          </p>
+          <button class="outline">Continue lesson</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="tracks" class="tracks">
+      <div class="section-heading">
+        <h2>Choose a chemistry track</h2>
+        <p>Combine lecture-style instruction with lab simulations and spaced repetition decks.</p>
+      </div>
+      <div class="track-grid" id="trackGrid"></div>
+    </section>
+
+    <section id="practice" class="practice">
+      <div class="section-heading">
+        <h2>Adaptive practice</h2>
+        <p>Answer questions across conceptual, mathematical, and lab-safety domains.</p>
+      </div>
+      <div class="practice-card">
+        <div class="question-meta">
+          <p id="questionBadge" class="badge">Concept</p>
+          <p id="questionTopic" class="topic">Atomic Structure</p>
+        </div>
+        <h3 id="questionText">Loading question…</h3>
+        <form id="answers" class="answers"></form>
+        <div class="practice-actions">
+          <button type="button" class="ghost" id="hintButton">Hint</button>
+          <button type="button" class="cta" id="submitButton">Check answer</button>
+        </div>
+        <p id="feedback" class="feedback"></p>
+        <div class="xp-bar">
+          <p>XP this session: <strong id="xpCount">0</strong></p>
+          <div class="progress-bar">
+            <span id="xpProgress" style="width: 0%"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="labs" class="labs">
+      <div class="section-heading">
+        <h2>Hands-on virtual labs</h2>
+        <p>Simulations mimic spectrophotometry, titrations, calorimetry and more.</p>
+      </div>
+      <div class="lab-grid">
+        <article>
+          <h3>Calorimetry Sandbox</h3>
+          <p>Manipulate temperature probes and track heat flow in real time to explore enthalpy.</p>
+        </article>
+        <article>
+          <h3>Titration Coach</h3>
+          <p>Practice acid-base titrations with buret control, pH meter readouts, and live indicators.</p>
+        </article>
+        <article>
+          <h3>Quantum Spectra Explorer</h3>
+          <p>Shine configurable light sources on unknown samples and interpret the spectra.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="leaderboard" class="leaderboard">
+      <div class="section-heading">
+        <h2>Lab mates leaderboard</h2>
+        <p>Friendly competition keeps streaks alive.</p>
+      </div>
+      <div class="leaderboard-grid" id="leaderboardGrid"></div>
+    </section>
+
+    <section class="cta-banner">
+      <div>
+        <h2>Bring your chemistry grades to an A.</h2>
+        <p>Structured modules, guided labs, and accountability that fits in your pocket.</p>
+      </div>
+      <button class="cta">Get started free</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>© <span id="year"></span> ChemiLingo · Built by chemists & learning scientists</p>
+    <div class="footer-links">
+      <a href="#">Curriculum</a>
+      <a href="#">Instructor Portal</a>
+      <a href="#">Support</a>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

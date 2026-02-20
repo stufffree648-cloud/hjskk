@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MSTR BTC Holdings Per Share</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="container">
+      <header class="header">
+        <h1>MSTR Bitcoin Holdings Per Share</h1>
+        <p class="subhead">
+          Chart built from Strategy BTC treasury event history and split-adjusted share count estimates.
+        </p>
+      </header>
+
+      <section class="controls" aria-label="Chart controls">
+        <div class="control-row">
+          <label for="interval">Interval</label>
+          <select id="interval">
+            <option value="daily">Daily</option>
+            <option value="weekly" selected>Weekly</option>
+          </select>
+        </div>
+
+        <div class="control-row">
+          <label for="chartType">Chart Type</label>
+          <select id="chartType">
+            <option value="line" selected>Line</option>
+            <option value="histogram">Histogram (bar)</option>
+          </select>
+        </div>
+
+        <div class="control-row toggle-row">
+          <span>Theme</span>
+          <button id="themeToggle" type="button" aria-pressed="false">Switch to Dark</button>
+        </div>
+
+        <div class="control-row shares-row">
+          <label for="sharesOwned">Your MSTR shares</label>
+          <input id="sharesOwned" type="number" min="0" step="0.01" value="0" />
+        </div>
+      </section>
+
+      <section class="stats" aria-live="polite">
+        <p><strong>Latest BTC per share:</strong> <span id="latestPerShare">-</span></p>
+        <p><strong>Your estimated BTC exposure:</strong> <span id="userBtc">-</span></p>
+      </section>
+
+      <section class="chart-wrap">
+        <div id="chart" role="img" aria-label="MSTR BTC holding per share chart"></div>
+      </section>
+
+      <section class="note">
+        <h2>Data notes</h2>
+        <ul>
+          <li>Holdings event series reflects Strategy purchase/sale disclosures between Aug 2020 and Jan 2025.</li>
+          <li>Share counts are split-adjusted estimates aligned to SEC periodic filing windows.</li>
+          <li>Values are forward-filled between event dates to produce daily/weekly time series.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

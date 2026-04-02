@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MSTR BTC Per Share Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  </head>
+  <body class="theme-light">
+    <main class="app">
+      <header class="topbar">
+        <h1>MSTR BTC Holdings Per Share</h1>
+        <label class="switch-row" for="theme-toggle">
+          <span>Dark mode</span>
+          <input id="theme-toggle" type="checkbox" />
+        </label>
+      </header>
+
+      <section class="controls">
+        <label>
+          Interval
+          <select id="interval-select">
+            <option value="daily">Daily</option>
+            <option value="weekly" selected>Weekly</option>
+          </select>
+        </label>
+
+        <label>
+          Chart type
+          <select id="chart-type-select">
+            <option value="line" selected>Line</option>
+            <option value="bar">Histogram</option>
+          </select>
+        </label>
+
+        <label>
+          Shares you own
+          <input id="owned-shares" type="number" min="0" step="1" value="0" />
+        </label>
+      </section>
+
+      <section class="stats" id="owned-stats">
+        Enter shares owned to estimate your BTC exposure.
+      </section>
+
+      <section class="chart-wrap">
+        <div id="chart" aria-label="MSTR BTC per share chart"></div>
+      </section>
+
+      <footer class="footnote" id="footnote"></footer>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

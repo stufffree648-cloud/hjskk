@@ -3,6 +3,8 @@ import json
 from datetime import date, datetime, timedelta
 
 BTC_EVENTS = [
+    ("2024-02-06", 190000),
+    ("2024-02-26", 193000),
     ("2024-03-11", 205000),
     ("2024-03-19", 214246),
     ("2024-05-01", 214400),
@@ -72,10 +74,16 @@ BTC_EVENTS = [
     ("2026-03-09", 738731),
     ("2026-03-16", 761068),
     ("2026-03-23", 762099),
+    ("2026-04-06", 766970),
 ]
 
 # Shares in absolute shares (not thousands), sourced from strategy.com/shares
+# Pre-Aug-2024 values are split-adjusted (x10) for the 10-for-1 split on Aug 8 2024
 SHARE_SNAPSHOTS = [
+    ("2024-02-01", 158000000),
+    ("2024-03-31", 166000000),
+    ("2024-06-30", 175000000),
+    ("2024-09-30", 244000000),
     ("2024-12-31", 281735000),
     ("2025-03-31", 299653000),
     ("2025-06-30", 314216000),
@@ -99,6 +107,21 @@ def ffill_lookup(points, current):
     return value
 
 
+def lerp_lookup(points, current):
+    """Linear interpolation between adjacent snapshot dates."""
+    if current <= points[0][0]:
+        return points[0][1]
+    if current >= points[-1][0]:
+        return points[-1][1]
+    for i in range(len(points) - 1):
+        d0, v0 = points[i]
+        d1, v1 = points[i + 1]
+        if d0 <= current < d1:
+            frac = (current - d0).days / (d1 - d0).days
+            return v0 + frac * (v1 - v0)
+    return points[-1][1]
+
+
 def main():
     btc_points = sorted((to_date(d), v) for d, v in BTC_EVENTS)
     share_points = sorted((to_date(d), v) for d, v in SHARE_SNAPSHOTS)
@@ -109,7 +132,7 @@ def main():
     d = start
     while d <= end:
         btc = ffill_lookup(btc_points, d)
-        shares = ffill_lookup(share_points, d)
+        shares = lerp_lookup(share_points, d)
         if btc is not None and shares is not None:
             bps = btc / shares
             daily.append(

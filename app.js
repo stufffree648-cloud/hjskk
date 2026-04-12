@@ -24,7 +24,15 @@ function buildSeries() {
 
   chart.setOption(
     {
-      tooltip: { trigger: 'axis' },
+      tooltip: {
+        trigger: 'axis',
+        formatter: function (params) {
+          const p = params[0];
+          const btc = Number(p.value).toFixed(6);
+          const sats = Math.round(p.value * 1e8).toLocaleString();
+          return `${p.name}<br/>BTC/share: ${btc}<br/>Sats/share: ${sats}`;
+        }
+      },
       xAxis: { type: 'category', data: labels },
       yAxis: {
         type: 'value',
@@ -49,9 +57,10 @@ function buildSeries() {
   const latest = points[points.length - 1];
   const owned = Number(ownedSharesInput.value || 0);
   const estBtc = owned * latest.btcPerShare;
-  ownedStats.textContent = owned
-    ? `${formatNumber(owned)} share(s) × ${latest.btcPerShare.toFixed(6)} BTC/share = ${formatNumber(estBtc, 6)} BTC (~${formatNumber(estBtc * 100000000, 0)} sats)`
-    : 'Enter shares owned to estimate your BTC exposure.';
+  const currentBps = `Current: ${latest.btcPerShare.toFixed(6)} BTC/share (${formatNumber(latest.satsPerShare, 0)} sats)`;
+  ownedStats.innerHTML = owned
+    ? `${currentBps}<br/>${formatNumber(owned)} share(s) × ${latest.btcPerShare.toFixed(6)} BTC/share = ${formatNumber(estBtc, 6)} BTC (~${formatNumber(estBtc * 100000000, 0)} sats)`
+    : `${currentBps}<br/>Enter shares owned to estimate your BTC exposure.`;
 
   footnote.textContent = `Data updated ${payload.meta.generatedAt}. BTC history source: ${payload.meta.btcSource}. Share count source: ${payload.meta.shareSource}.`;
 }

@@ -45,10 +45,12 @@ visible finish line — Kivetz 2006).
 
 ## 3. Boss battles — one per unit, mastery-gated
 
-A boss is a 10-question mixed gauntlet in final-exam style for that unit. **Unlocks** when
-the unit's power meter reaches 80%; **cleared** at 9/10 or better. Failing a boss costs
-nothing — it's "scouting the boss" — rematch unlocks after the specific missed concepts are
-cleared from the tracker.
+A boss is a 10-question mixed gauntlet in final-exam style for that unit — **all ten
+battles plus the Final Exam Dragon are pre-built and computation-verified in
+`boss-battles.md`**. **Unlocks** when the unit's power meter reaches 80%; **cleared** at
+9/10 or better. Failing a boss costs nothing — it's "scouting the boss" — rematch unlocks
+after the specific missed concepts are cleared from the tracker (shuffle letters and
+regenerate numbers on rematches).
 
 | Unit | Boss |
 |---|---|

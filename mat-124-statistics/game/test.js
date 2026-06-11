@@ -122,6 +122,7 @@ console.log("BOOT");
 handlers["DOMContentLoaded"]();
 check("home renders with level title", ids.levelTitle.textContent === "Data Rookie");
 check("intro modal shown on first launch", !ids.modal._cls.has("hidden") || ids.modalCard._html.includes("Welcome"));
+check("PLAY button routes to Readiness Check first", ids.smartBtn._html.includes("Readiness"));
 
 console.log("PRACTICE — full unit run, all correct");
 T.startPractice(1);
@@ -207,6 +208,14 @@ check("forge queue is 10", T.getSession().queue.length === 10);
 finishSession(true);
 check("forge XP awarded", T.getS().xp > xpBeforeForge);
 check("forge summary modal", ids.modalCard._html.includes("Session complete"));
+
+console.log("BOSS REMATCH FRESHNESS");
+T.getS().bossCleared[5] = true;
+T.startBoss(5);
+const forgedInBoss = T.getSession().queue.filter(it => it.q).length;
+check("cleared-boss rematch injects forged questions", forgedInBoss >= 3);
+finishSession(true);
+check("forged rematch clears end-to-end", ids.modalCard._html.includes("DEFEATED"));
 
 console.log("EXAM SIMULATOR — silent run, review at end");
 let unitForge = true;

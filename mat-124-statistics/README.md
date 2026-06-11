@@ -5,10 +5,13 @@ July 1 – August 18, 2026, Prof. Deanne Stigliano.
 
 ## 🎮 THE GAME — play it now
 
-**`game/index.html` is a real, playable quiz RPG** — open it in any browser
-(double-click the file, or `cd game && python3 -m http.server` and visit
-localhost:8000). To put it online: GitHub → Settings → Pages → deploy from this
-branch → then visit `https://<you>.github.io/hjskk/mat-124-statistics/game/`.
+**▶️ Live at: https://stufffree648-cloud.github.io/hjskk/** (auto-deployed from
+`main` by GitHub Actions — bookmark it, or "Add to Home Screen" on your phone to
+install it as an app). Instant-play mirrors if Pages is still building:
+https://raw.githack.com/stufffree648-cloud/hjskk/main/mat-124-statistics/game/index.html
+
+Local option: open `game/index.html` in any browser (double-click the file, or
+`cd game && python3 -m http.server`).
 
 What's in it: all **298 verified questions** · XP & 8 ranks (Data Rookie →
 Statistician Supreme) · **10 animated boss battles** (The Biased Pollster → The

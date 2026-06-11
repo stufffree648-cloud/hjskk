@@ -188,6 +188,59 @@ function showScroll(u) {
     <button class="big-btn primary" onclick="closeModal()">Tuck it away ➜</button>`);
 }
 
+/* ---------------- the Watch List (videos per unit, from the research) ---------------- */
+const VIDEOS = {
+  1: [
+    { t: "Khan Academy — Study design (primary)", u: "https://www.khanacademy.org/math/statistics-probability/designing-studies" },
+    { t: "Crash Course Stats #10 — Sampling Methods (preview, 11 min)", u: "https://www.youtube.com/playlist?list=PL8dPuuaLjXtNM_Y-bUAhblSAdWRnmBUcr" },
+  ],
+  2: [
+    { t: "Khan Academy — Summarizing quantitative data (primary)", u: "https://www.khanacademy.org/math/statistics-probability/summarizing-quantitative-data" },
+    { t: "Khan Academy — Modeling data distributions (z-scores)", u: "https://www.khanacademy.org/math/statistics-probability/modeling-distributions-of-data" },
+    { t: "Organic Chemistry Tutor — Intro to Statistics (worked examples, 57 min)", u: "https://www.youtube.com/playlist?list=PL0o_zxa4K1BVsziIRdfv4Hl4UIqDZhXWV" },
+  ],
+  3: [
+    { t: "Khan Academy — Probability (primary)", u: "https://www.khanacademy.org/math/statistics-probability/probability-library" },
+  ],
+  4: [
+    { t: "jbstatistics — Discrete Probability Distributions (primary, 5–10 min each)", u: "https://www.jbstatistics.com/category/discrete-probability-distributions/" },
+    { t: "Khan Academy — Random variables (backup)", u: "https://www.khanacademy.org/math/statistics-probability/random-variables-stats-library" },
+  ],
+  5: [
+    { t: "jbstatistics — Sampling Distributions & CLT (primary — the hardest topic)", u: "https://www.jbstatistics.com/category/sampling-distributions/" },
+    { t: "StatQuest — CLT & Standard Error (intuition repair)", u: "https://www.youtube.com/playlist?list=PLblh5JKOoLUK0FLuzwntyYI10UQFUhsY9" },
+    { t: "Khan Academy — Sampling distributions (practice)", u: "https://www.khanacademy.org/math/statistics-probability/sampling-distributions-library" },
+  ],
+  6: [
+    { t: "jbstatistics — Confidence Intervals (primary)", u: "https://www.jbstatistics.com/category/confidence-intervals/" },
+    { t: "Khan Academy — Confidence intervals (practice)", u: "https://www.khanacademy.org/math/statistics-probability/confidence-intervals-one-sample" },
+  ],
+  7: [
+    { t: "jbstatistics — Hypothesis Testing (primary)", u: "https://www.jbstatistics.com/category/hypothesis-testing/" },
+    { t: "Khan Academy — Significance tests (practice)", u: "https://www.khanacademy.org/math/statistics-probability/significance-tests-one-sample" },
+  ],
+  8: [
+    { t: "jbstatistics — Chi-square Tests (primary)", u: "https://www.jbstatistics.com/category/chi-square-tests/" },
+    { t: "Khan Academy — Two-sample inference (backup)", u: "https://www.khanacademy.org/math/statistics-probability/significance-tests-confidence-intervals-two-samples" },
+  ],
+  9: [
+    { t: "jbstatistics — Regression (primary)", u: "https://www.jbstatistics.com/category/regression/" },
+    { t: "Khan Academy — Bivariate data (scatterplots, r, least-squares)", u: "https://www.khanacademy.org/math/statistics-probability/describing-relationships-quantitative-data" },
+  ],
+};
+function showVideos(u) {
+  const list = VIDEOS[u];
+  if (!list) return;
+  const rows = list.map((v, i) => `<p style="text-align:left">${i + 1}. <a href="${v.u}" target="_blank" rel="noopener">${v.t}</a></p>`).join("");
+  modal(`
+    <div class="big-emoji">📺</div>
+    <h2>Watch List — Unit ${u}: ${UNITS[u].name}</h2>
+    <p>The loop: watch → come back → <b>Train</b> while it's fresh. Misses get scheduled automatically.</p>
+    ${rows}
+    <p style="text-align:left"><a href="https://sullystats.com/statistics-videos/" target="_blank" rel="noopener">🎬 SullyStats — the textbook author's own videos + chapter-test solutions</a> (matches the Sullivan book your course uses)</p>
+    <button class="big-btn primary" onclick="closeModal()">Back ➜</button>`);
+}
+
 /* ---------------- trophies ---------------- */
 function masteredCount() {
   return Object.values(S.perQ).filter(st => st.days && st.days.length >= 3).length;
@@ -1273,6 +1326,7 @@ function renderHome() {
       ${isDragon ? "" : `<div class="power-bar"><div class="power-fill" style="width:${Math.round(p * 100)}%"></div></div>`}
       <div class="u-btns">
         ${isDragon ? `<button class="u-btn" data-train="10">🎰 Train Roulette (${Math.round(unitPower(10) * 100)}%)</button>` : `<button class="u-btn" data-train="${u}">Train (${Math.round(p * 100)}%)</button>`}
+        ${isDragon || !VIDEOS[u] ? "" : `<button class="u-btn scroll" data-video="${u}" title="Watch list — curated videos for this unit">📺</button>`}
         ${isDragon || !SCROLLS[u] ? "" : `<button class="u-btn scroll" data-scroll="${u}" ${p >= 0.5 || cleared ? "" : "disabled"} title="${p >= 0.5 || cleared ? SCROLLS[u].name : "Formula scroll — unlocks at 50% power"}">${p >= 0.5 || cleared ? "📜" : "🔒"}</button>`}
         <button class="${bossClass}" data-boss="${u}" ${unlocked ? "" : "disabled"}>${bossLabel}</button>
       </div>`;
@@ -1312,6 +1366,7 @@ function renderHome() {
   grid.querySelectorAll("[data-train]").forEach(b => (b.onclick = () => startPractice(+b.dataset.train)));
   grid.querySelectorAll("[data-boss]").forEach(b => (b.onclick = () => startBoss(+b.dataset.boss)));
   grid.querySelectorAll("[data-scroll]").forEach(b => (b.onclick = () => showScroll(+b.dataset.scroll)));
+  grid.querySelectorAll("[data-video]").forEach(b => (b.onclick = () => showVideos(+b.dataset.video)));
   grid.querySelectorAll("[data-forge]").forEach(b => (b.onclick = () => startForge(FORGE_SETS[b.dataset.forge] || null)));
 
   // summer heatmap: every day from "now-ish" through the final

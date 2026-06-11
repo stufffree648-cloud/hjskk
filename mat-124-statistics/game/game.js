@@ -98,6 +98,7 @@ function freshState() {
     luckyDate: null,                  // date the daily lucky question was claimed
     daily: null,                      // {date, score, streak} for the Daily Challenge
     earnBack: null,                   // {oldStreak, date, needed, cleared} — broken-chain repair
+    coachSeen: {},                    // time-triggered coaching modals shown
     seenIntro: false,
     muted: false,
     theme: null,           // null = follow system preference; else 'dark' | 'light'
@@ -645,6 +646,78 @@ const FORGE = [
       options: [pct(r * r), pct(Math.abs(r)), pct(1 - r * r), pct(Math.abs(r) / 2)], answer: 0,
       expl: `r² = (${r})² = ${(r * r).toFixed(2)} → ${pct(r * r)}. (Reading r itself as the percent is the #1 regression error.)` };
   },
+  function meanmed() {
+    const m = ri(8, 20), offs = [-5, -2, 1, 2, 4];
+    const data = offs.map(o => m + o).sort(() => Math.random() - 0.5);
+    return { unit: 2, stem: `<p>For the data ${data.join(", ")} the MEAN is:</p>`,
+      options: [String(m), String(m + 1), String(9), String(m - 1)], answer: 0,
+      expl: `Sum = ${data.reduce((a, b) => a + b, 0)}, divided by 5 = ${m}. (${m + 1} is the median — sort first to see it.)` };
+  },
+  function tinysd() {
+    const xb = ri(10, 40), d = pk([2, 3, 4, 5, 6]);
+    const data = [xb - d, xb, xb + d].sort(() => Math.random() - 0.5);
+    return { unit: 2, stem: `<p>The SAMPLE standard deviation of ${data.join(", ")} is:</p>`,
+      options: [String(d), String(d * d), String(2 * d), r2(d * Math.sqrt(2 / 3))], answer: 0,
+      expl: `Mean ${xb}; squared deviations ${d * d} + 0 + ${d * d} = ${2 * d * d}; divide by n−1 = 2 → ${d * d}; √ → ${d}. (${d * d} is the variance; ${r2(d * Math.sqrt(2 / 3))} divides by n.)` };
+  },
+  function fences() {
+    const q1 = ri(10, 30), iqr = pk([6, 8, 10, 12]), q3 = q1 + iqr;
+    return { unit: 2, stem: `<p>Q1 = ${q1} and Q3 = ${q3}. The UPPER outlier fence (1.5×IQR rule) is:</p>`,
+      options: [r1(q3 + 1.5 * iqr), r1(q3 + iqr), r1(q1 - 1.5 * iqr), r1(q3 + 3 * iqr)], answer: 0,
+      expl: `IQR = ${iqr}; fence = Q3 + 1.5(${iqr}) = ${r1(q3 + 1.5 * iqr)}. (Third option is the LOWER fence.)` };
+  },
+  function empirical() {
+    const mu = ri(8, 24) * 5, sg = pk([5, 8, 10, 15]);
+    const v = pk([
+      { d: `between ${mu - sg} and ${mu + sg}`, a: "68%" },
+      { d: `between ${mu - 2 * sg} and ${mu + 2 * sg}`, a: "95%" },
+      { d: `above ${mu + 2 * sg}`, a: "2.5%" },
+      { d: `between ${mu} and ${mu + sg}`, a: "34%" },
+    ]);
+    const opts = [v.a, ...["68%", "95%", "34%", "2.5%", "99.7%", "50%"].filter(o => o !== v.a).slice(0, 3)];
+    return { unit: 2, stem: `<p>Scores are bell-shaped with mean ${mu} and SD ${sg}. By the Empirical Rule, about what percent of scores are ${v.d}?</p>`,
+      options: opts, answer: 0,
+      expl: `68 / 95 / 99.7 within 1 / 2 / 3 SDs; halves and tails come from symmetry. Answer: ${v.a}.` };
+  },
+  function addrule() {
+    const a = pk([0.3, 0.35, 0.4, 0.45, 0.5]), b = pk([0.3, 0.35, 0.4]), c = pk([0.1, 0.15, 0.2]);
+    return { unit: 3, stem: `<p>P(A) = ${a}, P(B) = ${b}, P(A and B) = ${c}. P(A or B) = ?</p>`,
+      options: [r2(a + b - c), r2(a + b), r2(a * b), r2(a + b + c)], answer: 0,
+      expl: `Addition rule: ${a} + ${b} − ${c} = ${r2(a + b - c)}. (Forgetting to subtract the overlap double-counts it.)` };
+  },
+  function condprob() {
+    const pa = pk([0.4, 0.5, 0.6]), j = pk([0.12, 0.15, 0.2, 0.24]);
+    return { unit: 3, stem: `<p>P(A) = ${pa} and P(A and B) = ${j}. P(B | A) = ?</p>`,
+      options: [r2(j / pa), r2(j * pa), r2(pa - j), r2(j)], answer: 0,
+      expl: `P(B|A) = P(A and B)/P(A) = ${j}/${pa} = ${r2(j / pa)} — the given event becomes the denominator.` };
+  },
+  function atleast() {
+    const n = ri(2, 4), p = pk([0.1, 0.15, 0.2, 0.25]);
+    const ans = 1 - (1 - p) ** n;
+    return { unit: 3, stem: `<p>Each of ${n} independent parts is defective with probability ${p}. P(at least one defective) = ?</p>`,
+      options: [r4(ans), r4((1 - p) ** n), r4(Math.min(n * p, 0.9999)), r4(p ** n)], answer: 0,
+      expl: `1 − P(none) = 1 − ${1 - p}^${n} = ${r4(ans)}. (Adding ${p} ${n} times ignores overlap; ${r4(p ** n)} is ALL defective.)` };
+  },
+  function sampsize() {
+    const E = pk([0.02, 0.025, 0.03, 0.04, 0.05]), [cl, z] = pk([[95, 1.96], [90, 1.645]]);
+    const raw = z * z * 0.25 / (E * E), n = Math.ceil(raw);
+    return { unit: 6, stem: `<p>Estimate a proportion within E = ${E} at ${cl}% confidence, no prior estimate. Required n = ?</p>`,
+      options: [String(n), String(n - 1), String(Math.ceil(z * z * 0.25 / E)), String(Math.ceil(raw / 2))], answer: 0,
+      expl: `n = z*²(0.25)/E² = ${r1(raw)} → ALWAYS round UP → ${n}. (Rounding down under-delivers the precision you promised.)` };
+  },
+  function mefromci() {
+    const xb = ri(30, 90), me = pk([2.4, 3.5, 4.2, 5.6]);
+    return { unit: 6, stem: `<p>A confidence interval for μ is (${r1(xb - me)}, ${r1(xb + me)}). The margin of error is:</p>`,
+      options: [r1(me), r1(2 * me), r1(xb), r1(me / 2)], answer: 0,
+      expl: `ME = half the width = (${r1(xb + me)} − ${r1(xb - me)})/2 = ${r1(me)}; the center ${xb} is the point estimate.` };
+  },
+  function twotailp() {
+    const z = pk([1.5, 1.75, 2, 2.25, 2.5]);
+    const tail = 1 - ncdf(z);
+    return { unit: 7, stem: `<p>A two-tailed test produces z = ${z}. The p-value is:</p>`,
+      options: [r4(2 * tail), r4(tail), r4(ncdf(z)), r4(ncdf(z) - 0.5)], answer: 0,
+      expl: `Two-tailed: p = 2·P(Z > ${z}) = 2(${r4(tail)}) = ${r4(2 * tail)}. (Forgetting to double is the classic one- vs two-tail slip.)` };
+  },
 ];
 
 FORGE.forEach(g => { try { g.unitTag = g().unit; } catch (e) { g.unitTag = 0; } });
@@ -1188,8 +1261,9 @@ function renderHome() {
   forge.innerHTML = `
     <div class="u-name" style="color:#ffd9a0">🔨 THE FORGE</div>
     <div class="u-sub" style="color:#c9a36a">infinite questions, freshly-forged numbers every time — exactly how MyLab generates your real tests</div>
-    <div class="u-btns">
+    <div class="u-btns" style="flex-wrap:wrap">
       <button class="u-btn" data-forge="all" style="border-color:#8a5a20;color:#ffd9a0">⚒️ ALL</button>
+      <button class="u-btn" data-forge="23" style="border-color:#8a5a20;color:#ffd9a0">Data+Prob</button>
       <button class="u-btn" data-forge="45" style="border-color:#8a5a20;color:#ffd9a0">Binomial+Normal</button>
       <button class="u-btn" data-forge="67" style="border-color:#8a5a20;color:#ffd9a0">CI+Tests</button>
       <button class="u-btn" data-forge="89" style="border-color:#8a5a20;color:#ffd9a0">χ²+Regression</button>
@@ -1209,7 +1283,7 @@ function renderHome() {
   grid.appendChild(exam);
   exam.querySelector("#examBtn").onclick = startExam;
 
-  const FORGE_SETS = { "45": [4, 5], "67": [6, 7], "89": [8, 9] };
+  const FORGE_SETS = { "23": [2, 3], "45": [4, 5], "67": [6, 7], "89": [8, 9] };
   grid.querySelectorAll("[data-train]").forEach(b => (b.onclick = () => startPractice(+b.dataset.train)));
   grid.querySelectorAll("[data-boss]").forEach(b => (b.onclick = () => startBoss(+b.dataset.boss)));
   grid.querySelectorAll("[data-scroll]").forEach(b => (b.onclick = () => showScroll(+b.dataset.scroll)));
@@ -1420,7 +1494,35 @@ document.addEventListener("DOMContentLoaded", () => {
     navigator.serviceWorker.register("./sw.js").catch(() => {});
   }
   renderHome();
-  if (!S.seenIntro) {
+  // time-triggered coaching: the game knows the course calendar
+  const tdy = todayStr();
+  if (tdy >= "2026-08-12" && !S.coachSeen.finalWeek) {
+    S.coachSeen.finalWeek = true; save();
+    modal(`
+      <div class="big-emoji">🐉</div>
+      <h2>FINAL WEEK PROTOCOL</h2>
+      <p style="text-align:left">
+      🛏️ <b>Sleep beats cramming</b> — consistency all week; never an all-nighter (it cuts memory formation ~40%).<br>
+      📕 <b>Drill the Black Book to zero 🩸</b> — your own error log is the highest-yield review.<br>
+      🎓 <b>Run the Exam Simulator daily</b> — silent conditions inoculate against choking.<br>
+      ✏️ <b>On the test:</b> change answers only WITH a reason (wrong→right beats right→wrong 2:1) · estimate before computing · sanity gauntlet: probabilities in [0,1], CI contains the estimate, n rounds UP · re-read what's asked before clicking Next.<br>
+      😮‍💨 <b>If panic hits:</b> double inhale through the nose, long slow exhale — twice. Then say "I'm excited."<br>
+      24h before: nothing new — only retrieval of what you know.</p>
+      <button class="big-btn primary" onclick="closeModal()">Slay the Dragon ➜</button>`);
+  } else if (tdy >= "2026-07-01" && !S.coachSeen.courseLive) {
+    S.coachSeen.courseLive = true; save();
+    modal(`
+      <div class="big-emoji">📚</div>
+      <h2>THE COURSE IS LIVE — Day-One Checklist</h2>
+      <p style="text-align:left">
+      1️⃣ Log into <b>Blackboard</b> (courses.ccm.edu) — the course appears ~8 a.m.<br>
+      2️⃣ Read the syllabus, then <b>email Prof. Stigliano</b> the four unknowns: grade weights · exam format (MC vs show-work) · proctoring rules · any dropped-quiz/curve policy. She answers email reliably.<br>
+      3️⃣ Activate <b>Pearson MyLab 14-day temporary access</b> — start homework today, buy the code by mid-July.<br>
+      4️⃣ When she posts a <b>study guide</b>, treat it as the test — students say it mirrors the real one.<br>
+      5️⃣ Budget <b>12+ hrs/week</b>. The pace is the boss nobody warns you about.<br>
+      Keep the streak alive here — your reviews and bosses now line up with the real chapters.</p>
+      <button class="big-btn primary" onclick="closeModal()">Let's go ➜</button>`);
+  } else if (!S.seenIntro) {
     S.seenIntro = true; save();
     modal(`
       <div class="big-emoji">🏔️</div>

@@ -1018,3 +1018,367 @@ population?
 
 **Answer: D.** Generalization comes from random *selection*. Random *assignment* (B) buys
 causal validity, not representativeness — the two pillars are independent of each other.
+
+---
+
+## Wave 2 — deeper unit pools (IDs continue each unit's numbering)
+
+**U1-Q11.** A podcast host asks listeners to text 1 for "yes" or 2 for "no," and 5,000 texts arrive. The sampling method is:
+- A) simple random sampling
+- B) cluster sampling
+- C) voluntary response sampling
+- D) systematic sampling
+
+**Answer: C.** Listeners self-selected — the texts came from whoever cared enough to respond, which biases the result regardless of the 5,000 count.
+
+**U1-Q12.** In the study "plants given Fertilizer X grow taller than unfertilized plants," the RESPONSE variable is:
+- A) plant height
+- B) fertilizer type
+- C) the garden plots
+- D) the number of plants
+
+**Answer: A.** The response is the measured outcome (height); fertilizer type is the explanatory variable.
+
+**U1-Q13.** "Class rank (1st, 2nd, 3rd, …)" has which level of measurement?
+- A) nominal
+- B) ratio
+- C) interval
+- D) ordinal
+
+**Answer: D.** Ranks order the students, but the gap between 1st and 2nd needn't equal the gap between 2nd and 3rd — order without meaningful differences = ordinal.
+
+**U1-Q14.** A census is:
+- A) a random sample of at least 10% of the population
+- B) data collected from EVERY member of the population
+- C) any survey run by a government agency
+- D) a study that uses stratified sampling
+
+**Answer: B.** Census = the whole population; everything smaller is a sample.
+
+**U1-Q15.** A survey asks: "Don't you agree that the cafeteria's food is overpriced?" The biggest flaw is:
+- A) nonresponse bias
+- B) undercoverage
+- C) too small a sample
+- D) leading question wording, which produces response bias
+
+**Answer: D.** The phrasing pushes respondents toward "yes" — answers reflect the wording, not true opinion.
+
+**U2-Q11.** For the data 5, 7, 7, 9, 12 the mean and median are:
+- A) mean 8, median 9
+- B) mean 8, median 7
+- C) mean 7, median 8
+- D) mean 9, median 7
+
+**Answer: B.** Mean = 40/5 = 8; the middle of the sorted list is 7.
+
+**U2-Q12.** A data set has standard deviation s = 4. Its variance is:
+- A) 2
+- B) 8
+- C) 4
+- D) 16
+
+**Answer: D.** Variance = s² = 16. (A takes the square root again; B doubles.)
+
+**U2-Q13.** Ten points are added to every score in a data set. What happens?
+- A) the mean increases by 10; the standard deviation is unchanged
+- B) both the mean and standard deviation increase by 10
+- C) the mean is unchanged; the standard deviation increases by 10
+- D) neither changes
+
+**Answer: A.** Shifting every value moves the center but not the spread — distances between values are unchanged.
+
+**U2-Q14.** For 9 ordered data values, the median is:
+- A) the average of the 4th and 5th values
+- B) the 4th value
+- C) the 5th value
+- D) any value between the 4th and 6th
+
+**Answer: C.** With odd n, the median is the single middle value: position (9+1)/2 = 5.
+
+**U2-Q15.** Scores are bell-shaped with mean 40 and SD 5. About what percent exceed 50?
+- A) 2.5%
+- B) 5%
+- C) 16%
+- D) 0.3%
+
+**Answer: A.** 50 is 2 SDs above the mean; ~95% lie within ±2σ, leaving ~5% split between two tails → ~2.5% above.
+
+**U3-Q11.** P(A) = 0.35. P(A does not occur) = ?
+- A) 0.35
+- B) 0.50
+- C) 1.35
+- D) 0.65
+
+**Answer: D.** Complement rule: 1 − 0.35 = 0.65.
+
+**U3-Q12.** A and B are independent with P(A) = 0.6 and P(B) = 0.5. P(A and B) = ?
+- A) 1.10
+- B) 0.30
+- C) 0.55
+- D) 0.11
+
+**Answer: B.** Independent → multiply: (0.6)(0.5) = 0.30. (A adds — that's the "or" rule's first step, not "and.")
+
+**U3-Q13.** P(A) = 0.40 and P(A and B) = 0.12. P(B | A) = ?
+- A) 0.12
+- B) 0.48
+- C) 0.30
+- D) 3.33
+
+**Answer: C.** P(B|A) = P(A and B)/P(A) = 0.12/0.40 = 0.30. (D divides the wrong way.)
+
+**U3-Q14.** Two independent smoke alarms each work with probability 0.9. P(at least one works) = ?
+- A) 0.99
+- B) 0.81
+- C) 0.90
+- D) 1.80
+
+**Answer: A.** 1 − P(both fail) = 1 − (0.1)(0.1) = 0.99. (B is P(both work); D illegally adds.)
+
+**U3-Q15.** How many ways can 2 co-captains be chosen from 5 players (order doesn't matter)?
+- A) 20
+- B) 10
+- C) 25
+- D) 120
+
+**Answer: B.** 5C2 = 10. (A is 5P2 = 20, which wrongly counts AB and BA separately.)
+
+**U4-Q11.** X ~ binomial with n = 20, p = 0.25. The mean of X is:
+- A) 5
+- B) 4
+- C) 15
+- D) 0.25
+
+**Answer: A.** μ = np = 20(0.25) = 5.
+
+**U4-Q12.** For that same X, the standard deviation is:
+- A) 3.75
+- B) 5.00
+- C) 1.94
+- D) 2.24
+
+**Answer: C.** σ = √(npq) = √(20·0.25·0.75) = √3.75 ≈ 1.94. (A is the variance.)
+
+**U4-Q13.** Four independent customers each buy with probability 0.3. P(NO ONE buys) = ?
+- A) 0.0081
+- B) 0.2401
+- C) 0.7000
+- D) 0
+
+**Answer: B.** P(none) = (0.7)⁴ = 0.2401. (A computes (0.3)⁴ — everyone buying.)
+
+**U4-Q14.** A game pays $10 with probability 0.1 and nothing otherwise. The fair (break-even) price to play is:
+- A) $10.00
+- B) $0.10
+- C) $5.00
+- D) $1.00
+
+**Answer: D.** E(payout) = 10(0.1) = $1 — pay more than that and the house wins long-run.
+
+**U4-Q15.** Which is NOT a binomial random variable?
+- A) the number of heads in 20 coin flips
+- B) the number of "yes" answers among 50 randomly polled voters
+- C) the number of rolls of a die needed to get the first six
+- D) the number of defective parts in a random batch of 10
+
+**Answer: C.** "Trials until first success" has no fixed n — that's geometric, not binomial.
+
+**U5-Q11.** P(Z > 1.28) = ?
+- A) 0.8997
+- B) 0.1003
+- C) 0.2810
+- D) 0.6400
+
+**Answer: B.** 1 − 0.8997 = 0.1003 — about the top 10%. (A is the left-tail area.)
+
+**U5-Q12.** IQ ~ N(100, 15). P(85 < X < 115) is approximately:
+- A) 0.68
+- B) 0.95
+- C) 0.50
+- D) 0.997
+
+**Answer: A.** That's μ ± 1σ → ≈68% (exactly 0.6827).
+
+**U5-Q13.** Wait times ~ N(50, 10). The 25th percentile is about:
+- A) 56.7
+- B) 25.0
+- C) 47.5
+- D) 43.3
+
+**Answer: D.** z₀.₂₅ ≈ −0.67 → 50 + (−0.67)(10) ≈ 43.3. (B confuses the percentile with the value.)
+
+**U5-Q14.** σ = 12 and n = 9. The standard error of x̄ is:
+- A) 1.33
+- B) 12
+- C) 4
+- D) 3
+
+**Answer: C.** 12/√9 = 12/3 = 4. (A divides by n; D is √9.)
+
+**U5-Q15.** A population is strongly skewed. Why can normal-based methods still be used for x̄ when n = 64?
+- A) they can't be — the population must be normal
+- B) skewness disappears from the sample data once n > 30
+- C) the population becomes normal as sampling continues
+- D) the CLT makes the sampling distribution of x̄ approximately normal for large n
+
+**Answer: D.** Only the distribution of the sample MEAN normalizes; the population and the data stay skewed.
+
+**U6-Q11.** The critical value z* for a 90% confidence interval is:
+- A) 1.96
+- B) 2.576
+- C) 1.645
+- D) 1.282
+
+**Answer: C.** 90% leaves 5% in each tail → z₀.₉₅ = 1.645. (A is 95%, B is 99%, D is 80%.)
+
+**U6-Q12.** n = 9, x̄ = 20, s = 3, t* = 2.306. The 95% CI for μ is:
+- A) (18.04, 21.96)
+- B) (19.23, 20.77)
+- C) (13.08, 26.92)
+- D) (17.69, 22.31)
+
+**Answer: D.** SE = 3/√9 = 1; ME = 2.306 → 20 ± 2.31. (A used z* = 1.96; C used s without √n.)
+
+**U6-Q13.** To cut a confidence interval's margin of error in HALF, the sample size must be:
+- A) quadrupled
+- B) doubled
+- C) halved
+- D) unchanged — change the confidence level instead
+
+**Answer: A.** ME ∝ 1/√n, so halving ME needs 4× the n.
+
+**U6-Q14.** n = 20 with p̂ = 0.10. Is the normal-based proportion CI valid?
+- A) yes — n is at least 10
+- B) no — np̂ = 2 successes, below the required 10
+- C) yes — p̂ is below 0.5
+- D) no — proportion intervals require n ≥ 100
+
+**Answer: B.** Need at least ~10 successes AND 10 failures; 20(0.10) = 2 fails the check.
+
+**U6-Q15.** From the same data, a 90% CI compared to a 95% CI is:
+- A) narrower
+- B) wider
+- C) identical
+- D) shifted to the left
+
+**Answer: A.** Less confidence demanded → smaller critical value → narrower interval.
+
+**U7-Q11.** A test produces p-value = 0.003 with α = 0.01. The decision is:
+- A) fail to reject H₀
+- B) accept H₀
+- C) raise α and retest
+- D) reject H₀ — the result is significant even at the 0.01 level
+
+**Answer: D.** 0.003 ≤ 0.01 → reject.
+
+**U7-Q12.** Test H₀: p = 0.40 with p̂ = 0.46, n = 100. The test statistic is about:
+- A) z = 0.06
+- B) z = 6.0
+- C) z = 1.22
+- D) z = 2.45
+
+**Answer: C.** SE = √(0.40·0.60/100) = 0.049; z = 0.06/0.049 ≈ 1.22. (A forgets to divide by SE.)
+
+**U7-Q13.** For z = 1.22, the TWO-tailed p-value is about:
+- A) 0.11
+- B) 0.22
+- C) 0.89
+- D) 0.06
+
+**Answer: B.** 2 × P(Z > 1.22) = 2(0.1112) ≈ 0.22. (A forgets to double.)
+
+**U7-Q14.** The power of a hypothesis test is:
+- A) 1 − β — the probability of detecting an effect that really exists
+- B) α — the significance level
+- C) β — the Type II error rate
+- D) 1 − α — the confidence level
+
+**Answer: A.** Power = P(reject H₀ | H₀ false). More power = fewer missed effects.
+
+**U7-Q15.** The only change that reduces BOTH Type I and Type II error rates is:
+- A) raising α
+- B) lowering α
+- C) increasing the sample size
+- D) switching to a one-tailed test
+
+**Answer: C.** α and β trade off against each other at fixed n; more data improves both.
+
+**U8-Q11.** A die-fairness check: 4 categories each expected 25 times; observed 30, 20, 25, 25. χ² = ?
+- A) 2.0
+- B) 0.5
+- C) 10.0
+- D) 0
+
+**Answer: A.** (30−25)²/25 + (20−25)²/25 + 0 + 0 = 1 + 1 = 2.0.
+
+**U8-Q12.** That goodness-of-fit test's degrees of freedom:
+- A) 4
+- B) 3
+- C) 2
+- D) 99
+
+**Answer: B.** df = k − 1 = 3.
+
+**U8-Q13.** Which scenario calls for an INDEPENDENT-samples t-test?
+- A) the same patients' blood pressure before and after medication
+- B) twins assigned one to each diet
+- C) the proportion of men vs women who exercise
+- D) the mean GPA of randomly selected athletes vs randomly selected non-athletes
+
+**Answer: D.** Two unrelated groups, comparing MEANS. (A and B are paired; C is proportions.)
+
+**U8-Q14.** Two-proportion test: 30 of 100 in group 1, 20 of 100 in group 2. The pooled proportion is:
+- A) 0.30
+- B) 0.20
+- C) 0.25
+- D) 0.50
+
+**Answer: C.** Pool everything: (30+20)/(100+100) = 50/200 = 0.25.
+
+**U8-Q15.** A chi-square test of independence gives p-value = 0.40. Conclusion:
+- A) the variables are proven independent
+- B) fail to reject H₀ — no evidence of an association
+- C) the variables are associated
+- D) the test must be rerun with more categories
+
+**Answer: B.** Large p → the data are consistent with independence; that's absence of evidence, not proof.
+
+**U9-Q11.** For a regression with r² = 0.81 and a NEGATIVE slope, r = ?
+- A) 0.81
+- B) 0.90
+- C) −0.90
+- D) −0.81
+
+**Answer: C.** r = ±√0.81 = ±0.9; the slope's sign gives the direction → −0.9.
+
+**U9-Q12.** ŷ = 5 + 2x. The predicted value at x = 10 is:
+- A) 25
+- B) 20
+- C) 7
+- D) 52
+
+**Answer: A.** 5 + 2(10) = 25.
+
+**U9-Q13.** A point has y = 22 and ŷ = 25. The residual is:
+- A) 3
+- B) −3
+- C) 47
+- D) 0.88
+
+**Answer: B.** Residual = y − ŷ = −3; the point sits below the line. (A reverses the order.)
+
+**U9-Q14.** Heights (x) are converted from centimeters to inches. The correlation r:
+- A) is multiplied by 2.54
+- B) is divided by 2.54
+- C) becomes 0
+- D) is unchanged — r has no units
+
+**Answer: D.** Correlation is computed from z-scores, so linear unit changes can't touch it.
+
+**U9-Q15.** Which addition damages a strong correlation the most?
+- A) one point far from the line at an extreme x value
+- B) one point exactly on the line near the center
+- C) a duplicate of an existing point
+- D) re-sorting the rows of the data table
+
+**Answer: A.** Influential points — extreme in x AND off the pattern — grab the line and crush r.

@@ -104,6 +104,72 @@ function qstate(id) {
 }
 function isMastered(id) { const q = S.perQ[id]; return !!q && q.days.length >= 3; }
 
+/* ---------------- formula scrolls (unlock at 50% unit power) ---------------- */
+const SCROLLS = {
+  1: { name: "Scroll of Sound Sampling", html: `
+    <p><b>Statistic</b> = from a sample (x̄, s, p̂) · <b>Parameter</b> = whole population (μ, σ, p)</p>
+    <p><b>Methods:</b> simple random · stratified (some from EVERY group) · cluster (ALL of a few groups) · systematic (every kth) · convenience (⚠️ biased)</p>
+    <p><b>The two pillars:</b> random <i>selection</i> → generalize · random <i>assignment</i> → causation</p>
+    <p>Levels: nominal → ordinal → interval (no true 0) → ratio</p>` },
+  2: { name: "Scroll of the Center & Spread", html: `
+    <p>x̄ = Σx/n · s² = Σ(x−x̄)²/(n−1) ← <b>divide by n−1</b></p>
+    <p>z = (x − μ)/σ · IQR = Q3 − Q1 · fences: Q1 − 1.5·IQR, Q3 + 1.5·IQR</p>
+    <p>Empirical Rule: 68 / 95 / 99.7 within 1 / 2 / 3 SD</p>
+    <p>Right-skew → mean &gt; median · use median + IQR for skewed data</p>
+    <p>TI-84: <code>STAT → 1-Var Stats</code> (x̄ = mean, Sx = sample SD)</p>` },
+  3: { name: "Scroll of Chance", html: `
+    <p>P(A′) = 1 − P(A) · P(A or B) = P(A) + P(B) − P(A and B)</p>
+    <p>P(A and B) = P(A)·P(B|A) — independent ⇔ P(A and B) = P(A)P(B)</p>
+    <p>P(B|A) = P(A and B)/P(A) ← <b>the given event is the denominator</b></p>
+    <p>Mutually exclusive ≠ independent (they're near-opposites!)</p>
+    <p>nCr = n!/(r!(n−r)!) — order doesn't matter · nPr — order matters</p>` },
+  4: { name: "Scroll of Lord Binomial", html: `
+    <p>Valid distribution: each P in [0,1], ΣP = 1 · μ = Σx·P(x)</p>
+    <p>Binomial: fixed n, two outcomes, independent, constant p</p>
+    <p>P(x) = nCx·pˣ·qⁿ⁻ˣ · μ = np · σ = √(npq)</p>
+    <p>P(at least one) = 1 − P(none)</p>
+    <p>TI-84: <code>binompdf(n,p,x)</code> = exactly x · <code>binomcdf(n,p,x)</code> = ≤ x · P(X≥k) = 1 − binomcdf(n,p,k−1)</p>` },
+  5: { name: "Scroll of the Bell (the Thief's weakness)", html: `
+    <p>z = (x − μ)/σ · x = μ + zσ</p>
+    <p><b>CLT:</b> x̄ ~ Normal(μ, σ/√n) for large n — the SAMPLE MEAN normalizes, never the data</p>
+    <p><b>SE = σ/√n</b> ← using σ instead of σ/√n is the #1 exam error</p>
+    <p>p̂: SE = √(pq/n)</p>
+    <p>TI-84: <code>normalcdf(lo,hi,μ,σ)</code> · <code>invNorm(area,μ,σ)</code> · tails: ±1E99</p>` },
+  6: { name: "Scroll of the Interval Keeper", html: `
+    <p>Mean (σ unknown — always, basically): x̄ ± t*·s/√n, df = n−1</p>
+    <p>Proportion: p̂ ± z*·√(p̂q̂/n) — need ≥10 successes AND failures</p>
+    <p>z*: 90% → 1.645 · 95% → 1.96 · 99% → 2.576</p>
+    <p>n for proportion: (z*)²(0.25)/E² · n for mean: (z*σ/E)² — <b>ALWAYS round UP</b></p>
+    <p>Interpretation: "95% of intervals built this way capture μ" — never "95% of data"</p>
+    <p>TI-84: <code>TInterval</code> · <code>1-PropZInt</code></p>` },
+  7: { name: "Scroll of the Null", html: `
+    <p>H₀ has the = , about PARAMETERS (μ, p) — never x̄ or p̂</p>
+    <p>Proportion: z = (p̂−p₀)/√(p₀q₀/n) · Mean: t = (x̄−μ₀)/(s/√n)</p>
+    <p>Reject H₀ ⇔ p-value ≤ α · "fail to reject" ≠ "accept"</p>
+    <p>p-value = P(data this extreme | H₀ true) — never P(H₀)</p>
+    <p>Type I = reject true H₀ (α) · Type II = miss real effect (β) · power = 1−β</p>
+    <p>TI-84: <code>T-Test</code> · <code>1-PropZTest</code></p>` },
+  8: { name: "Scroll of the Sphinx", html: `
+    <p>Paired (same subjects twice): t = d̄/(s_d/√n) · Independent: 2-SampTTest</p>
+    <p>χ² = Σ(O−E)²/E · E = (row total)(col total)/grand total</p>
+    <p>df: GOF = k−1 · independence = (r−1)(c−1)</p>
+    <p>χ² H₀ is ALWAYS "independent / no association"</p>
+    <p>CI for difference contains 0 ⇔ no significant difference</p>
+    <p>3+ means → ANOVA (one test, not many t-tests)</p>` },
+  9: { name: "Scroll of the Line", html: `
+    <p>ŷ = a + bx · b = r·(s_y/s_x) · a = ȳ − b·x̄</p>
+    <p>residual = y − ŷ (positive = point above line)</p>
+    <p>r ∈ [−1,1], unit-free · <b>r² = % of variation explained</b> (r = 0.6 → 36%!)</p>
+    <p>Slope speak: "predicted y changes by b per unit x, on average" — no causation from observational data, no extrapolation beyond the data's x-range</p>
+    <p>TI-84: <code>LinReg(ax+b)</code> — run <code>DiagnosticOn</code> once first</p>` },
+};
+function showScroll(u) {
+  const s = SCROLLS[u];
+  if (!s) return;
+  modal(`<div class="big-emoji">📜</div><h2>${s.name}</h2><div style="text-align:left">${s.html}</div>
+    <button class="big-btn primary" onclick="closeModal()">Tuck it away ➜</button>`);
+}
+
 /* ---------------- trophies ---------------- */
 function masteredCount() {
   return Object.values(S.perQ).filter(st => st.days && st.days.length >= 3).length;
@@ -756,12 +822,14 @@ function renderHome() {
       ${isDragon ? "" : `<div class="power-bar"><div class="power-fill" style="width:${Math.round(p * 100)}%"></div></div>`}
       <div class="u-btns">
         ${isDragon ? "" : `<button class="u-btn" data-train="${u}">Train (${Math.round(p * 100)}%)</button>`}
+        ${isDragon || !SCROLLS[u] ? "" : `<button class="u-btn scroll" data-scroll="${u}" ${p >= 0.5 || cleared ? "" : "disabled"} title="${p >= 0.5 || cleared ? SCROLLS[u].name : "Formula scroll — unlocks at 50% power"}">${p >= 0.5 || cleared ? "📜" : "🔒"}</button>`}
         <button class="${bossClass}" data-boss="${u}" ${unlocked ? "" : "disabled"}>${bossLabel}</button>
       </div>`;
     grid.appendChild(card);
   }
   grid.querySelectorAll("[data-train]").forEach(b => (b.onclick = () => startPractice(+b.dataset.train)));
   grid.querySelectorAll("[data-boss]").forEach(b => (b.onclick = () => startBoss(+b.dataset.boss)));
+  grid.querySelectorAll("[data-scroll]").forEach(b => (b.onclick = () => showScroll(+b.dataset.scroll)));
 
   const bg = $("badgeGrid"); bg.innerHTML = "";
   for (const b of BADGES) {
@@ -773,7 +841,8 @@ function renderHome() {
     bg.appendChild(d);
   }
 
-  $("totalsLine").textContent = `${S.totals.correct}/${S.totals.answered} lifetime correct · best streak ${S.bestStreak} 🔥 · ${masteredCount()} mastered · ${Object.keys(S.badges).length}/${BADGES.length} 🏆`;
+  const arsenal = BANK.length + Object.values(BOSSES).reduce((a, b) => a + b.questions.length, 0);
+  $("totalsLine").textContent = `${S.totals.correct}/${S.totals.answered} lifetime correct · best streak ${S.bestStreak} 🔥 · ${masteredCount()} mastered · ${Object.keys(S.badges).length}/${BADGES.length} 🏆 · ${arsenal}-question arsenal`;
 }
 
 /* ---------------- theme ---------------- */

@@ -20,6 +20,18 @@ const UNITS = {
   10: { name: "Procedure Roulette", sub: "mixed final-exam style", icon: "🎰" },
 };
 const BOSS_FACES = { 1: "🕴️", 2: "👾", 3: "🎰", 4: "👑", 5: "🦹", 6: "🛡️", 7: "⚖️", 8: "🦁", 9: "🔮", 10: "🐉" };
+const BOSS_LINES = {
+  1: { intro: "My polls say you'll lose. I surveyed everyone who agrees with me.", taunts: ["Just as my biased sample predicted!", "I only polled people who think you'll fail!", "2 million voluntary responses can't be wrong... right?"], defeat: "Curses... a truly random sample..." },
+  2: { intro: "I will DRAG your mean wherever I please.", taunts: ["Your score is skewing right... downward!", "One extreme value is all I need!", "Resistant? Your mean isn't!"], defeat: "I've been... trimmed from the data..." },
+  3: { intro: "I'm due for a win. I can FEEL it. The streak demands it.", taunts: ["The wheel remembers, I swear it!", "After that miss, my win is GUARANTEED!", "These dice are hot tonight!"], defeat: "The house... the house always wins..." },
+  4: { intro: "Success or failure. n trials. There is nothing else in my kingdom.", taunts: ["You forgot the nCx, peasant!", "That was the CUMULATIVE probability, fool!", "n − 1 ways to fail, and you found one!"], defeat: "Improbable... yet... it occurred..." },
+  5: { intro: "Your sample means belong to ME. No one remembers the √n.", taunts: ["You used σ instead of σ/√n — DELICIOUS!", "The data never become normal — only the means!", "Another victim of the standard error!"], defeat: "The sampling distribution... it's... normal... after all..." },
+  6: { intro: "Are you 95% confident? You shouldn't be. Most can't even say what it means.", taunts: ["95% of the data, you say? WRONG!", "You used z when σ was unknown!", "Your interval missed the parameter!"], defeat: "You... captured me... like the method intended..." },
+  7: { intro: "You cannot prove me false. The brave reject me; the careless accept me.", taunts: ["You ACCEPTED me?! I am never accepted!", "Your p-value is not the probability I'm true!", "Insufficient evidence, mortal!"], defeat: "p < α... I am... rejected... with sufficient evidence..." },
+  8: { intro: "Answer my riddle, traveler: WHICH TEST do you use?", taunts: ["Wrong procedure, mortal!", "Paired data, independent test — pathetic!", "(O−E)²/E... your expected counts betray you!"], defeat: "You knew... every test... the riddle is solved..." },
+  9: { intro: "I have seen your future — I predicted it from data that ends years ago!", taunts: ["My line extends FOREVER!", "r = 0.6 explains 60%... or does it? You'll never know!", "Correlation IS causation if you believe hard enough!"], defeat: "Out of range... extrapolated... into nothing..." },
+  10: { intro: "Every concept. Every formula. Every trap. ALL AT ONCE. This is what 100% feels like from the other side.", taunts: ["The final is CUMULATIVE, child!", "Week 1 material — and you've forgotten it!", "Your professor gives NO partial credit, and neither do I!"], defeat: "You are... ready... Go take your 100... Statistician... Supreme..." },
+};
 const LEVELS = [
   { xp: 0, title: "Data Rookie" },
   { xp: 250, title: "Sample Scout" },
@@ -82,6 +94,8 @@ function freshState() {
     diagDone: null,
     badges: {},                       // id -> date earned
     counters: { revenge: 0, maxCombo: 0 },
+    history: {},                      // date -> {a: answered, c: correct, xp}
+    luckyDate: null,                  // date the daily lucky question was claimed
     muted: false,
     theme: null,           // null = follow system preference; else 'dark' | 'light'
   };
@@ -239,6 +253,21 @@ const QUEST_POOL = [
   { key: "rv2", desc: "Get revenge on 2 questions that once beat you", target: 2 },
   { key: "dmg5", desc: "Deal 5 damage in a boss battle", target: 5 },
 ];
+function hashStr(s) {
+  let h = 0;
+  for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return h;
+}
+function luckyId() {
+  return BANK[hashStr("lucky" + todayStr()) % BANK.length].id;
+}
+function logHistory(correct, xp) {
+  const d = todayStr();
+  const h = S.history[d] || { a: 0, c: 0, xp: 0 };
+  h.a++; if (correct) h.c++; h.xp += xp;
+  S.history[d] = h;
+}
+
 function seededPick(dateStr, pool, n) {
   let h = 0;
   for (const c of dateStr) h = (h * 31 + c.charCodeAt(0)) >>> 0;
@@ -508,6 +537,7 @@ function startBoss(unit) {
   modal(`
     <div class="big-emoji">${BOSS_FACES[unit]}</div>
     <h2>${boss.name}</h2>
+    <p style="color:var(--purple)"><i>"${BOSS_LINES[unit].intro}"</i></p>
     <p>${session.boss.total} questions. Test conditions: no notes, no partial credit, one shot each.</p>
     <p><b>Clear at ${session.boss.total - (unit === 10 ? 2 : 1)}/${session.boss.total}.</b> Losing costs nothing — it's scouting.</p>
     <button class="big-btn primary" onclick="closeModal()">FIGHT ⚔️</button>`);
@@ -594,6 +624,14 @@ function lockIn(sure) {
   session.stats[isRight ? "right" : "wrong"]++;
   session.stats.xp += res.xp;
 
+  logHistory(isRight, res.xp);
+  if (navigator.vibrate) navigator.vibrate(isRight ? 25 : [60, 40, 60]);
+  if (isRight && q.id === luckyId() && S.luckyDate !== todayStr()) {
+    S.luckyDate = todayStr();
+    grantXP(res.xp, "lucky question");
+    setTimeout(() => { toast(`⚡ THAT was today's secret LUCKY QUESTION — XP doubled (+${res.xp})!`, true); sfx("loot"); confetti(90); }, 700);
+  }
+
   if (session.mode === "diag") {
     if (!isRight) {
       $("qCard").classList.remove("shake"); void $("qCard").offsetWidth;
@@ -607,6 +645,8 @@ function lockIn(sure) {
       questEvent("dmg5");
     } else {
       session.boss.misses.push(q.id);
+      const lines = BOSS_LINES[session.unit];
+      if (lines) toast(`${BOSS_FACES[session.unit]} "${lines.taunts[Math.floor(Math.random() * lines.taunts.length)]}"`);
       $("qCard").classList.remove("shake"); void $("qCard").offsetWidth;
       $("qCard").classList.add("shake");
     }
@@ -726,6 +766,7 @@ function endSession(early) {
           <div>${b.score}/${b.total}<span>score</span></div>
           <div>+${perfect ? 75 : 50}<span>XP</span></div>
         </div>
+        <p style="color:var(--purple)"><i>"${BOSS_LINES[session.unit].defeat}"</i></p>
         <p>${first ? "Under test conditions, no partial credit — and you cleared it. This is exactly what exam day feels like." : "Rematch won. The drill stays sharp."}</p>
         <button class="big-btn primary" onclick="closeModal(); showView('home'); renderHome();">Back to the map ➜</button>`);
     } else {
@@ -830,6 +871,28 @@ function renderHome() {
   grid.querySelectorAll("[data-train]").forEach(b => (b.onclick = () => startPractice(+b.dataset.train)));
   grid.querySelectorAll("[data-boss]").forEach(b => (b.onclick = () => startBoss(+b.dataset.boss)));
   grid.querySelectorAll("[data-scroll]").forEach(b => (b.onclick = () => showScroll(+b.dataset.scroll)));
+
+  // summer heatmap: every day from "now-ish" through the final
+  const heat = $("heatGrid"); heat.innerHTML = "";
+  const start = "2026-06-08", end = "2026-08-18", today = todayStr();
+  for (let d = start; d <= end; d = addDays(d, 1)) {
+    const h = S.history[d];
+    const a = h ? h.a : 0;
+    const sq = document.createElement("div");
+    let cls = "heat";
+    if (a >= 25) cls += " h3"; else if (a >= 10) cls += " h2"; else if (a >= 1) cls += " h1";
+    if (d === today) cls += " today";
+    if (d === "2026-07-01" || d === end) cls += " mark";
+    sq.className = cls;
+    sq.title = `${d} — ${a} question${a === 1 ? "" : "s"}`;
+    if (d === "2026-07-01") sq.textContent = "📚";
+    if (d === end) sq.textContent = "🐉";
+    heat.appendChild(sq);
+  }
+  const t = S.history[today] || { a: 0, c: 0, xp: 0 };
+  let week = 0;
+  for (let i = 0; i < 7; i++) { const h = S.history[addDays(today, -i)]; if (h) week += h.a; }
+  $("climbStats").textContent = `today: ${t.a} answered (+${t.xp} XP) · last 7 days: ${week} · paint a square green every day and the Dragon falls`;
 
   const bg = $("badgeGrid"); bg.innerHTML = "";
   for (const b of BADGES) {
@@ -957,6 +1020,28 @@ document.addEventListener("DOMContentLoaded", () => {
     if (k === "enter" && session.picked !== null) { e.preventDefault(); lockIn(true); }
     if (k === "u" && session.picked !== null) lockIn(false);
   });
+  $("reportBtn").onclick = () => {
+    const lvl = levelFor(S.xp);
+    const wrongs = Object.entries(S.perQ).filter(([, st]) => st.lastWrong).map(([id]) => id);
+    const due = dueReviews();
+    const lines = [
+      `THE CLIMB TO 100 — progress report (${todayStr()})`,
+      `Level ${lvl + 1} ${LEVELS[lvl].title} — ${S.xp} XP · streak ${S.streak} (best ${S.bestStreak}) · ${masteredCount()} mastered · trophies ${Object.keys(S.badges).length}/${BADGES.length}`,
+      `Lifetime: ${S.totals.correct}/${S.totals.answered} correct${S.diagDone ? ` · readiness ${S.diagDone.score}/15` : " · readiness check NOT done"}`,
+      "Unit power: " + [1,2,3,4,5,6,7,8,9].map(u => `U${u} ${Math.round(unitPower(u) * 100)}%`).join(" · "),
+      "Bosses cleared: " + (Object.keys(S.bossCleared).length ? Object.keys(S.bossCleared).map(u => BOSSES[u].name).join(", ") : "none yet"),
+      `Due reviews: ${due.length}${due.length ? " (" + due.join(", ") + ")" : ""}`,
+      `Currently-wrong questions: ${wrongs.length ? wrongs.join(", ") : "none"}`,
+      "",
+      "Paste this to your AI tutor for a targeted session on the weak spots.",
+    ];
+    const text = lines.join("\n");
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => toast("📋 Progress report copied — paste it to your tutor!", true));
+    } else {
+      modal(`<h2>📋 Progress report</h2><p style="text-align:left;white-space:pre-wrap;font-size:12px">${text}</p><button class="big-btn primary" onclick="closeModal()">Done</button>`);
+    }
+  };
   $("resetBtn").onclick = () => {
     if (confirm("Wipe ALL progress (XP, streak, mastery)? This cannot be undone.")) {
       localStorage.removeItem(SAVE_KEY); load(); ensureQuests(); renderHome();

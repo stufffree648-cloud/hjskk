@@ -97,6 +97,7 @@ function freshState() {
     history: {},                      // date -> {a: answered, c: correct, xp}
     luckyDate: null,                  // date the daily lucky question was claimed
     daily: null,                      // {date, score, streak} for the Daily Challenge
+    earnBack: null,                   // {oldStreak, date, needed, cleared} — broken-chain repair
     seenIntro: false,
     muted: false,
     theme: null,           // null = follow system preference; else 'dark' | 'light'
@@ -237,8 +238,15 @@ function touchStreak() {
         S.freezesUsed += missed; S.streak += 1;
         toast(`🧊 ${missed} streak freeze${missed > 1 ? "s" : ""} used — chain intact at ${S.streak}. Smart resource management.`);
       } else {
+        const oldStreak = S.streak;
+        const dueLen = dueReviews().length;
         S.streak = 1;
-        toast("🌅 Fresh start — new chain begins today. Your XP and mastery never reset.");
+        if (oldStreak >= 3 && dueLen >= 1) {
+          S.earnBack = { oldStreak, date: today, needed: Math.min(3, dueLen), cleared: 0 };
+          toast(`💔 Chain broken at ${oldStreak}... but not lost. EARN IT BACK: clear ${S.earnBack.needed} due review${S.earnBack.needed > 1 ? "s" : ""} today and the chain is restored.`, true);
+        } else {
+          toast("🌅 Fresh start — new chain begins today. Your XP and mastery never reset.");
+        }
       }
     }
   }
@@ -380,7 +388,21 @@ function recordAnswer(q, correctPick, sure, isReviewDue) {
 
     if (st.lastWrong) { xp += 20; msgs.push("⚔️ REVENGE +20"); S.counters.revenge++; questEvent("rv2"); }
     else if (wasMastered && !isReviewDue) { xp += 2; msgs.push("+2 (already mastered)"); }
-    else if (isReviewDue) { xp += 15; msgs.push("🧹 review cleared +15"); questEvent("rev3"); }
+    else if (isReviewDue) {
+      xp += 15; msgs.push("🧹 review cleared +15"); questEvent("rev3");
+      if (S.earnBack && S.earnBack.date === today) {
+        S.earnBack.cleared++;
+        if (S.earnBack.cleared >= S.earnBack.needed) {
+          S.streak = S.earnBack.oldStreak + 1;
+          S.bestStreak = Math.max(S.bestStreak, S.streak);
+          S.earnBack = null;
+          msgs.push("⛓️ CHAIN RESTORED");
+          setTimeout(() => { toast(`⛓️ CHAIN RESTORED — ${S.streak} days. Earned, not given.`, true); confetti(130); sfx("level"); }, 600);
+        } else {
+          msgs.push(`⛓️ earn-back ${S.earnBack.cleared}/${S.earnBack.needed}`);
+        }
+      }
+    }
     else { xp += 10; msgs.push("+10"); }
     if (firstTry && sure) questEvent("ft5");
 
@@ -522,6 +544,41 @@ function startDaily() {
     <p>Today's 10 — fixed for the whole day, one attempt only. Score 8+ for the <b>+30 XP Daily Crown</b>.</p>
     <p>Misses still enter your review deck. No retries until midnight.</p>
     <button class="big-btn primary" onclick="closeModal()">Take it on ➜</button>`);
+}
+
+/* ---------------- the Black Book (error log) ---------------- */
+function bookEntries() {
+  return Object.entries(S.perQ)
+    .filter(([id, st]) => st.everWrong && byId(id))
+    .sort((a, b) => (b[1].lastWrong ? 1 : 0) - (a[1].lastWrong ? 1 : 0));
+}
+function strip(html, n) {
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, n);
+}
+function showBlackBook() {
+  const entries = bookEntries();
+  const bleeding = entries.filter(([, st]) => st.lastWrong).length;
+  const rows = entries.slice(0, 40).map(([id, st]) => {
+    const q = byId(id);
+    return `<p style="text-align:left;margin-bottom:10px"><b>${st.lastWrong ? "🩸" : "⚔️"} ${id}</b> — ${strip(q.stem, 110)}…<br>
+      <span style="color:var(--dim);font-size:12px">${strip(q.expl, 150)}…</span></p>`;
+  }).join("");
+  modal(`
+    <div class="big-emoji">📕</div>
+    <h2>The Black Book</h2>
+    <p>${entries.length} question${entries.length === 1 ? " has" : "s have"} drawn your blood — ${bleeding} still undefeated. 🩸 = beating you · ⚔️ = avenged. Reviewing your own error log is the single highest-yield exam prep there is.</p>
+    <div style="max-height:38vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:10px">${rows}</div>
+    <button class="big-btn" style="background:linear-gradient(135deg,var(--red),#b03040);color:#fff" onclick="closeModal(); startBookDrill();">⚔️ DRILL THE BOOK (revenge pays +20)</button>
+    <button class="big-btn primary" onclick="closeModal()">Close it ➜</button>`);
+}
+function startBookDrill() {
+  const ids = bookEntries().map(([id]) => id).slice(0, 10);
+  if (!ids.length) { toast("The Book is empty — nothing has beaten you yet."); return; }
+  touchStreak(); ensureQuests();
+  session = { queue: ids.map(id => ({ id, review: true })), i: 0, mode: "practice", unit: weakestUnit(), picked: null, answered: false, stats: { right: 0, wrong: 0, xp: 0 } };
+  $("quizTitle").textContent = "📕 Black Book Drill";
+  $("bossBar").classList.add("hidden");
+  showView("quiz"); renderQuestion();
 }
 
 function startGauntlet() {
@@ -886,6 +943,16 @@ function renderHome() {
     : `<button class="big-btn" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#2a1c00;margin-top:10px" id="dailyBtn">🗓️ DAILY CHALLENGE<small>today's 10 — one attempt · 8+ wins the +30 XP crown${S.daily ? ` · streak ${S.daily.streak}` : ""}</small></button>`;
   if (!dailyDone) db.querySelector("#dailyBtn").onclick = startDaily;
 
+  const bb = $("bookBanner");
+  const entries = bookEntries();
+  if (entries.length) {
+    const bleeding = entries.filter(([, st]) => st.lastWrong).length;
+    bb.innerHTML = `<button class="big-btn" style="background:linear-gradient(135deg,#5c1f29,#3a1118);color:#ffb3c0;margin-top:10px;border:1px solid var(--red)" id="bookBtn">📕 THE BLACK BOOK<small>${entries.length} questions have beaten you · ${bleeding} 🩸 unavenged</small></button>`;
+    bb.querySelector("#bookBtn").onclick = showBlackBook;
+  } else {
+    bb.innerHTML = "";
+  }
+
   const gb = $("gauntletBanner");
   if (todayStr() >= GAUNTLET_UNLOCK) {
     gb.innerHTML = `<button class="big-btn" style="background:linear-gradient(135deg,var(--blue),#2f5fd0);color:#fff;margin-top:10px" id="gauntletBtn">🌀 GAUNTLET MODE<small>${GAUNTLET_SIZE} random questions vs the clock — clear 7 for +25 XP</small></button>`;
@@ -1051,6 +1118,7 @@ function sfx(kind, combo) {
 /* ---------------- wiring ---------------- */
 window.closeModal = closeModal;
 window.startQuickFive = startQuickFive;
+window.startBookDrill = startBookDrill;
 document.addEventListener("DOMContentLoaded", () => {
   load(); ensureQuests(); applyTheme();
   $("smartBtn").onclick = () => startPractice(weakestUnit());
@@ -1127,6 +1195,9 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("That doesn't look like a valid save. Nothing was changed.");
     }
   };
+  if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  }
   renderHome();
   if (!S.seenIntro) {
     S.seenIntro = true; save();

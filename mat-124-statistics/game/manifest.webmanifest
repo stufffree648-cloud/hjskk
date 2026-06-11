@@ -1,0 +1,13 @@
+{
+  "name": "The Climb to 100 — MAT-124 Statistics RPG",
+  "short_name": "Climb 100",
+  "description": "Quiz RPG for acing intro statistics: bosses, streaks, spaced repetition.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0e1a",
+  "theme_color": "#0b0e1a",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,332 @@
+# Deep-Research Report: MAT-124 Statistics (CCM, Summer 2026)
+
+Research date: June 11, 2026. Method: 10 parallel web-research agents (course
+identification, curriculum mapping, assessment formats, misconceptions, videos ×4,
+study-science ×2) followed by an adversarial verification pass on the load-bearing claims.
+Most .edu/publisher sites block automated fetching (HTTP 403), so many findings were
+triangulated from search-index excerpts across multiple independent queries; confidence
+is flagged throughout.
+
+---
+
+## 1. The course (verification verdicts in brackets)
+
+- **[VERIFIED]** Institution: **County College of Morris**, Randolph NJ. Deanne Stigliano is
+  Associate Professor & Assistant Chair, Mathematics — the only academic "Deanne Stigliano"
+  found anywhere. Sources: https://www.ccm.edu/teachers/stigliano-deanne/,
+  https://www.ratemyprofessors.com/professor/1766779 (4+/5, ~51 ratings)
+- **[VERIFIED]** MAT-124 "Statistics": 3 credits, 45 lecture hours; prereq MAT-016/026/120
+  or equivalent; credit for only one of MAT-124/MAT-130. Catalog:
+  https://catalog.ccm.edu/credit/courselistings/mat/ · Master syllabus:
+  https://www.ccm.edu/wp-content/uploads/2024/08/MAT-124-Statistics.pdf
+- **[LIKELY]** The five course outcomes listed in `study-guide.md` (sampling methods,
+  descriptive stats, CIs for the mean, hypothesis tests for the mean σ known/unknown,
+  correlation/regression) — consistently returned by exact-phrase searches of the official
+  syllabus PDF, but the PDF itself is fetch-blocked so not quoted verbatim.
+- **[VERIFIED]** Calculator policy: "only TI 84 models or below are acceptable," TI-Nspire
+  and all Casio models prohibited (identical language across CCM math syllabi).
+- **[LIKELY]** Textbook: Sullivan, *Statistics: Informed Decisions Using Data*, 7th ed.
+  (Pearson) + R Technology Guide supplements; **MyLab Statistics** homework (CCM bookstore
+  sells an "Intro Statistics w/MyStatLab" package:
+  https://bookstore.ccm.edu/intro-statistics-wmystatlab-and-sol-man-pkg-ccm; student
+  reviews confirm "homework is done on Mathlab").
+- **[VERIFIED]** Term: 7-week Summer 2026 session, **July 1 – August 18, 2026**
+  (https://wrnjradio.com/county-college-of-morris-opens-registration-for-summer-session-2026/,
+  TAPinto Morristown, updated June 9, 2026).
+- **[NOT PUBLIC]** Grade breakdown for this section — no public CCM MAT-124 syllabus shows
+  percentages. Anecdotal (RateMyProfessors): tests/quizzes scored out of 20, **no partial
+  credit**. Comparable online summer sections elsewhere run: homework 10–20% (up to 35%
+  online), quizzes 10–25%, unit exams 40–60%, cumulative final 20–30% (e.g., Nashville
+  State MATH 1530: HW 10/quizzes 10/three tests 60/final 20 —
+  https://ww2.nscc.edu/catalog/desc/syllabi/math/math1530.pdf; NTCC online summer:
+  proctored final worth 30% — https://www.ntcc.edu/sites/default/files/hb2504/documents/5336.pdf).
+  **Update this file when the real syllabus opens July 1.**
+
+## 2. The curriculum (what to learn)
+
+The canonical 9-unit sequence in `study-guide.md` was cross-verified against four
+textbooks' tables of contents — OpenStax *Introductory Statistics 2e*
+(https://openstax.org/books/introductory-statistics-2e/pages/index), Triola *Elementary
+Statistics* 14e (https://www.triolastats.com/es14), Larson/Farber 8e
+(https://www.pearson.com/en-us/subject-catalog/p/elementary-statistics-picturing-the-world/P200000007106),
+OpenIntro Statistics 4e (https://open.umn.edu/opentextbooks/textbooks/60) — and the ASA's
+GAISE College Report (https://www.amstat.org/asa/files/pdfs/gaise/gaisecollege_full.pdf).
+All four books follow the same arc; CCM's course description matches it exactly.
+Universal topics: data/sampling/design → descriptive stats → probability → binomial →
+normal/CLT → CIs → hypothesis tests (one mean t, one proportion z) → two-sample →
+correlation/regression; chi-square near-universal; ANOVA is the classic "if time permits"
+cut, especially plausible to be cut in a 7-week summer section.
+
+## 3. Most-missed topics (where the quiz fire is concentrated)
+
+From CAOS assessment research (delMas, Garfield, Ooms & Chance 2007 — average posttest
+score after a full course: just 54%! https://www.stat.auckland.ac.nz/~iase/serj/SERJ6(2)_delMas.pdf),
+the Castro Sotos et al. 2007 review
+(https://www.sciencedirect.com/science/article/abs/pii/S1747938X07000164), Hoekstra et
+al. 2014 on CIs (https://link.springer.com/article/10.3758/s13423-013-0572-3), and a 2025
+instructor survey (https://www.tandfonline.com/doi/full/10.1080/26939169.2025.2455560):
+
+1. **Sampling distributions / CLT** — consensus hardest topic in intro stats
+2. **Confidence-interval interpretation** — students endorse valid AND invalid readings
+   simultaneously; "95% of data" error *increases* during a typical course
+3. **p-value logic** — only ~20% of methodology *instructors* flagged all six false
+   p-value statements (Haller & Krauss 2002)
+4. **SD vs SE confusion**, 5. **conditional probability inversion**, 6. **t vs z**,
+7. **regression interpretation** (r vs r², deterministic slope, extrapolation)
+
+The 24-item misconception list driving the distractors in `question-bank.md` includes:
+p-value = P(H₀) inversion · CI = "95% of data" · "data become normal" CLT error ·
+SD-vs-SE · "fail to reject = accept" · mutually-exclusive-means-independent · gambler's
+fallacy · hospital-problem insensitivity to n · base-rate neglect / inverted conditionals ·
+correlation→causation · Type I/II swap · "n ≥ 30 → z" · sample-vs-population hypotheses ·
+significance = importance · replication fallacy · equiprobability bias · outcome
+orientation · variability-as-bumpiness · bigger-sample-fixes-bias · r vs r² ·
+deterministic slope · meaningless intercept · extrapolation · wider-CI-when-n-grows.
+
+## 4. Assessment landscape
+
+- **MyLab Statistics** dominates (numeric entry with strict rounding, MC, StatCrunch
+  applets; homework allows "View an Example" + similar-question retries; quizzes/tests
+  disable aids; proctoring via LockDown Browser/Honorlock is common for finals).
+- **13 recurring final-exam question types** were compiled from five public final reviews
+  (Broward STA2023: https://www.broward.edu/students/asc/north-asc/_docs/sta2023-exam-review.pdf,
+  Mt. SAC practice final, MCCKC MC review, East Central 30-pp review w/ keys, Monroe CC) —
+  the list is in `study-guide.md` and the Mixed Set of `question-bank.md` mirrors it.
+- **TI-84 keystrokes that get tested:** 1-Var Stats, binompdf/cdf, normalcdf, invNorm,
+  TInterval, 1-PropZInt, T-Test, Z-Test, 1-PropZTest, 2-SampTTest, χ²-Test, LinReg(ax+b)
+  with DiagnosticOn (e.g., https://www.mtsac.edu/eops/tutoring/Math_110_Statistics_Final_Review_Exercises.pdf,
+  Moorpark TI guide).
+
+## 5. The study protocol is evidence-based (why the loop works)
+
+- **Practice testing & spaced practice are the only two "high-utility" techniques** of ten
+  reviewed in Dunlosky et al. 2013 (rereading/highlighting/summarizing rated LOW):
+  https://journals.sagepub.com/doi/abs/10.1177/1529100612453266
+- **Testing effect:** one read + three recall attempts beat four reads, 61% vs 40% recall
+  at one week (Roediger & Karpicke 2006):
+  https://journals.sagepub.com/doi/10.1111/j.1467-9280.2006.01693.x
+- **MC practice works when distractors are competitive** — and it strengthens knowledge of
+  why lures are wrong, transferring even to related untested questions (Little, Bjork,
+  Bjork & Angello 2012:
+  https://bjorklab.psych.ucla.edu/wp-content/uploads/sites/13/2016/07/Little_EBjork_RBjork_Angello_2012.pdf);
+  meta-analytically, MC practice tests g = 0.70 vs restudy (Adesope et al. 2017:
+  https://journals.sagepub.com/doi/abs/10.3102/0034654316689306). Feedback prevents
+  learning the lures (Butler & Roediger 2008:
+  https://link.springer.com/article/10.3758/MC.36.3.604), and **explanation feedback beats
+  answer-only feedback for transfer** (Butler, Godbole & Marsh 2013:
+  https://eric.ed.gov/?id=EJ1007933).
+- **Spacing:** optimal review gap ≈ 10–20% of the time until the exam (Rohrer & Pashler
+  2007: https://files.eric.ed.gov/fulltext/ED505647.pdf); for a 35-day retention interval
+  the empirical optimum was an 11-day gap (Cepeda et al. 2008, N>1,350:
+  https://journals.sagepub.com/doi/abs/10.1111/j.1467-9280.2008.02209.x) → in a 7-week
+  course: re-test each unit ~5–10 days after learning it, again in final-review week.
+- **Interleaving:** mixing problem types beat blocked practice on delayed tests in a
+  preregistered RCT of 787 students — 61% vs 38%, d = 0.83 (Rohrer, Dedrick, Hartwig &
+  Cheung 2020: https://files.eric.ed.gov/fulltext/ED595322.pdf). Blocked practice *feels*
+  better while performing worse — don't trust practice fluency. The killer skill it builds
+  is exactly what stats finals demand: *choosing which procedure applies*.
+- **Successive relearning** (retrieve to criterion, then ~3 spaced relearning sessions)
+  raised real course exam scores by ~a letter grade (Rawson, Dunlosky & Sciartelli 2013:
+  https://link.springer.com/article/10.1007/s10648-013-9240-4; replication with d = 0.54–1.10:
+  Janes et al. 2020: https://onlinelibrary.wiley.com/doi/abs/10.1002/acp.3699). This is the
+  basis for the tracker's "3 consecutive correct on different days = mastered" rule.
+
+## 6. Video resources (full comparison)
+
+| Resource | Coverage | Length | Best for |
+|---|---|---|---|
+| Khan Academy Statistics & Probability | ALL units, 16-unit sequence + exercises/mastery | 5–12 min | spine: first exposure + practice |
+| jbstatistics (Balka, U. Guelph) | Units 4–9 superbly; thin on design/descriptive | 5–10 min | rigorous concepts, inference half |
+| Organic Chemistry Tutor | descriptive→hypothesis testing | 30–60 min | worked computational examples |
+| StatQuest (Starmer) | CLT, SE, p-values, regression; no z-test/chi-square depth; bootstrap-flavored CIs | 5–15 min | intuition repair |
+| Crash Course Statistics (44 eps, AP-based) | broad, almost no computation | ~11 min | first-exposure previews |
+| Professor Leonard | full lectures through ONE-sample hypothesis testing only | 1–2.5 hr | deep dives, units 1–7 |
+| Brandon Foltz Statistics 101 | descriptive → ANOVA | ~30 min | slow rescue lectures |
+| Simple Learning Pro | descriptive + inference basics | ~5 min | quick refreshers |
+
+Key URLs: https://www.khanacademy.org/math/statistics-probability ·
+https://www.jbstatistics.com/chapters-lessons/ ·
+https://www.youtube.com/playlist?list=PL0o_zxa4K1BVsziIRdfv4Hl4UIqDZhXWV (OCT) ·
+https://www.youtube.com/playlist?list=PLblh5JKOoLUK0FLuzwntyYI10UQFUhsY9 (StatQuest) ·
+https://www.youtube.com/playlist?list=PL8dPuuaLjXtNM_Y-bUAhblSAdWRnmBUcr (Crash Course) ·
+https://www.youtube.com/playlist?list=PL5102DFDC6790F3D0 (Prof Leonard) ·
+https://www.bcfoltz.com/stats-101/ (Foltz). jbstatistics also has a free ~450-pp textbook
+with exercises/answers: https://www.jbstatistics.com/text-resources/.
+
+## 8. Motivation science behind the game layer (added June 11, 2026)
+
+Second deep-research pass (5 agents: SDT/reward-undermining, gamification meta-analyses,
+habit & behavioral design, Duolingo/Anki case studies, math-specific motivation). Design
+implemented in `game-system.md`. Key verified findings:
+
+**Gamification works — when tied to learning, not activity.** Meta-analytic effects on
+actual learning: g = 0.49 cognitive (Sailer & Homner 2020:
+https://link.springer.com/article/10.1007/s10648-019-09498-w), g ≈ 0.50 overall (Bai, Hew
+& Huang 2020), g = 0.46 (Huang et al. 2020). The canonical backfire — Hanus & Fox 2015,
+where a semester of badges-for-showing-up + public leaderboard LOWERED intrinsic
+motivation and exam scores via reduced intrinsic motivation
+(https://www.sciencedirect.com/science/article/abs/pii/S0360131514002000) — is exactly the
+design our system avoids.
+
+**Reward-undermining boundaries (Deci, Koestner & Ryan 1999 meta-analysis, 128
+experiments):** expected tangible rewards contingent on engaging (d = −0.40) or completing
+(d = −0.36) a task undermine intrinsic motivation; UNEXPECTED rewards and informational
+verbal praise (d = +0.33) do not
+(https://www.semanticscholar.org/paper/8ad9801baea65b40fbbe6fc56e34b2b7be47d0ba). Hence:
+surprise loot yes, pre-announced bribes no; process praise yes ("you caught the σ-vs-SE
+trap"), ability praise no (Mueller & Dweck 1998:
+https://pubmed.ncbi.nlm.nih.gov/9686450/).
+
+**Streak design (Duolingo's own experiments):** 7-day streak → 2.4× next-day return
+(https://blog.duolingo.com/how-duolingo-streak-builds-habit/); TWO auto-equipped streak
+freezes beat both zero and three; free "earn-back" repair beat purchasable repair; streak
+wagers +14% retention; daily quests coincided with +25% DAU (sources in
+https://github.com/ChatPRD/lennys-podcast-transcripts/blob/main/episodes/jackson-shuttleworth/transcript.md
+and https://duolingo.deconstructoroffun.com/mechanics/streaks). Forgiveness measurably
+outperforms punishment. Broken streaks demotivate sharply (Silverman & Barasch 2023:
+https://academic.oup.com/jcr/article-abstract/49/6/1095/6623414) — hence freezes,
+earn-back, and "progress never resets" framing.
+
+**Anti-burnout (Anki's failure mode):** each new item generates ~7–10 future reviews;
+uncapped intake + inbox-zero streaks produce debt spirals and quitting
+(https://memoforge.app/blog/medical-school-anki-burnout-manage-1000-daily-cards/). Hence:
+12-review/day cap, backlog flattening, no raw-backlog display, no permanent difficulty
+punishment (FSRS lesson: https://forums.ankiweb.net/t/does-fsrs-solve-ease-hell/38275).
+
+**Habit mechanics:** implementation intentions d = 0.65 (Gollwitzer & Sheeran:
+https://cancercontrol.cancer.gov/sites/default/files/2020-06/goal_intent_attain.pdf);
+~66 days median to automaticity, one missed day is noise (Lally 2010:
+https://onlinelibrary.wiley.com/doi/10.1002/ejsp.674); tiny entry behavior + immediate
+celebration (Fogg: https://www.behaviormodel.org/); endowed progress 34% vs 19% completion
+(Nunes & Drèze 2006: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=991962);
+goal-gradient acceleration near milestones (Kivetz 2006:
+https://home.uchicago.edu/ourminsky/Goal-Gradient_Illusionary_Goal_Progress.pdf);
+emergency reserves (2 pre-authorized skips) raised goal attainment up to 40% (Sharif &
+Shu: https://anderson-review.ucla.edu/emergency-reserves/); fresh-start effect for
+relaunching after lapses (Dai, Milkman & Riis 2014:
+https://pubsonline.informs.org/doi/10.1287/mnsc.2014.1901).
+
+**Difficulty & goals:** optimal learning at ~85% success / ~15% error (Wilson et al. 2019:
+https://www.nature.com/articles/s41467-019-12552-4); proximal subgoals built skill,
+self-efficacy AND intrinsic interest in math practice while distal goals did nothing
+(Bandura & Schunk 1981:
+https://uploads-ssl.webflow.com/59faaf5b01b9500001e95457/5bc552d85141987915dab842_Bandura%20%26%20Schunk%2C%201981.pdf);
+interleaved practice 61% vs 38% (d = 0.83) in a preregistered RCT (Rohrer et al. 2020:
+https://files.eric.ed.gov/fulltext/ED595322.pdf).
+
+**Curiosity & anxiety:** committed guesses before learning boost memory (prediction
+effect, Brod: https://www.nature.com/articles/s41539-019-0056-y; pretesting: Richland,
+Kornell & Kao 2009: https://learninglab.uchicago.edu/Pre-Testing_files/RichlandKornellKao.pdf);
+high-curiosity questions enhance retention days later (Kang et al. 2009:
+https://pubmed.ncbi.nlm.nih.gov/19619181/); frequent low-stakes retrieval practice REDUCES
+test anxiety — 72% of students reported less test nervousness (Agarwal et al. 2014:
+https://www.sciencedirect.com/science/article/abs/pii/S221136811400059X); 10-minute
+expressive writing before a high-stakes exam boosts scores for anxious students (Ramirez &
+Beilock 2011, Science). Statistics anxiety is common and treatable via early wins +
+low-stakes quizzing (Onwuegbuzie & Wilson 2003:
+https://www.tandfonline.com/doi/abs/10.1080/1356251032000052447).
+
+**Goal framing for the 100% target:** perfectionistic STRIVINGS correlate positively with
+achievement (r ≈ +.24) while perfectionistic CONCERNS correlate negatively and drive test
+anxiety (Madigan meta-analysis:
+https://www.semanticscholar.org/paper/11f6f1f4915868b1016af879563fc88bf3dd1230);
+performance-approach goals predict grades, mastery goals predict interest — run both
+(Harackiewicz; Elliot & McGregor 2×2 framework). Hence: "100%" is the approach-framed exam
+goal; practice runs on mastery goals where errors are the mechanism.
+
+**Novelty management:** gamification effects sag around week 4 and recover by 6–10
+(Rodrigues et al. 2022: https://link.springer.com/article/10.1186/s41239-021-00314-6);
+refreshed mechanics sustain engagement (Tsay et al. 2020:
+https://onlinelibrary.wiley.com/doi/10.1111/jcal.12385) — hence the scheduled week-4
+mechanic drop. Largest learning effects occur at 1–3 month durations (Bai et al. 2020) —
+bracketing this 7-week course.
+
+## 9. Section-specific intel (third research pass, June 11, 2026)
+
+Five agents: Sullivan 7e structure, MyLab mechanics, Stigliano reviews, CCM logistics,
+practice materials. Actionable synthesis lives in `course-intel.md`; key verdicts:
+
+- **Sullivan 7e structure [HIGH confidence]:** 15 chapters, 4 parts; correlation/
+  regression is Ch 4 (early, descriptive) with inference at Ch 14; proportions before
+  means in Ch 9–10; standard semester = Ch 1–12 (Fundamentals-of-Statistics edit confirms
+  the cut list). TOC cross-confirmed via Pearson catalog, test-bank listings, and the
+  author's own data repo (https://github.com/sullystats/Stats7e — Ch1–Ch15 folders,
+  section-numbered files incl. 10_2B/10_3A splits). Pearson 7e page:
+  https://www.pearson.com/en-us/subject-catalog/p/statistics-informed-decisions-using-data/P200000011711/9780138317409
+- **SullyStats free resources [HIGH]:** chapter-test video solutions (by hand/TI-84/
+  StatCrunch/Excel) at https://sullystats.com/statistics-videos/; classroom-note packets
+  Ch 1–14 at https://sullystats.com/classroom-notes/; all exercise data at
+  https://sullystats.github.io/Stats7e/.
+- **MyLab mechanics [HIGH, from Pearson docs]:** View an Example penalty-free without
+  regeneration; Similar Exercise replaces homework scores until due date
+  (https://support.pearson.com/getsupport/s/article/XL-MyLabs-Attempts-Per-Question-and-Tries-Within-Each-Question);
+  tests pull re-randomized items from the same bank; full formatting checklist in
+  `course-intel.md` §3 (rounding source: https://www.drdawnwright.com/rounding-in-mystatlab/).
+- **Stigliano reviews [HIGH on repeated fragments]:** RMP 4.1/5, 51 ratings, 76% would
+  take again (https://www.ratemyprofessors.com/professor/1766779); "study guide that
+  looks exactly like the test"; tests out of 20, no partial credit, no exam feedback,
+  test-heavy; syllabus advises 9–12 hrs/wk; responsive by email.
+- **CCM logistics [HIGH unless noted]:** LMS is Blackboard (courses.ccm.edu) NOT Canvas;
+  A = 93–100 (https://catalog.ccm.edu/credit/academicinformation/gradingsystem/);
+  W-deadline ≈ Aug 4, 2026 [MEDIUM-HIGH]; no separate finals week; no public
+  Respondus/Honorlock license — Testing Center LRC 102 proctors when required [MEDIUM];
+  Pearson 14-day temporary access
+  (https://support.pearson.com/getsupport/s/article/How-to-enroll-using-Temporary-Access);
+  free Brainfuse 24/7 tutoring + Tutoring Center DH-156
+  (https://www.ccm.edu/student-support/tutoring-academic-support/).
+- **Practice materials [HIGH]:** LA Mission College Math 227 posted Sullivan-keyed exams
+  with keys (URLs in `course-intel.md` §5); ~275 Quizlet sets by Sullivan chapter.
+
+## 10. Performance layer (fourth research pass, June 11, 2026)
+
+Five agents: biology of memory, tutoring science, test-day execution, math readiness,
+study environment. Synthesis in `performance-protocol.md` and the tutor playbook in
+`tutor-protocol.md`. Key verified findings with evidence grades:
+
+- **Sleep:** consistency over the whole term predicts grades (~25% of variance); the
+  night-before shows no rescue effect (Okano et al. 2019, correlational:
+  https://www.nature.com/articles/s41539-019-0055-z). One night's deprivation cuts new
+  memory formation ~40% (Yoo/Walker 2007, experimental:
+  https://pubmed.ncbi.nlm.nih.gov/17293859/). Caffeine ≥6h before bed cuts sleep >1h
+  (Drake 2013 RCT: https://jcsm.aasm.org/doi/full/10.5664/jcsm.3170). Retrieval practice
+  protects memory against acute stress (Smith et al. 2016, Science RCT:
+  https://www.science.org/doi/10.1126/science.aah5067).
+- **Tutoring:** step-based tutoring ≈ human tutoring (d ≈ 0.76 vs 0.79, VanLehn 2011:
+  https://www.tandfonline.com/doi/abs/10.1080/00461520.2011.611369); worked examples for
+  stuck novices (Sweller & Cooper), fading with expertise (Kalyuga expertise reversal),
+  graduated hints point→teach→bottom-out (VanLehn 2006), feedback doubles retention of
+  low-confidence correct answers (Butler et al. 2008:
+  https://pubmed.ncbi.nlm.nih.gov/18605878/), high-confidence errors are most correctable
+  but resurface in ~a week without re-testing (Butterfield & Metcalfe; hypercorrection).
+- **Test-day:** answer changes are wrong→right 51% vs right→wrong 25% across 1,561 exams
+  (Kruger, Wirtz & Miller 2005: https://pubmed.ncbi.nlm.nih.gov/15898871/; 33 prior
+  studies agree) — change with a reason. Calculation errors run 1–5% per step with <50%
+  self-detection by re-reading (Panko: http://panko.shidler.hawaii.edu/HumanErr/Basic.htm)
+  → estimate-first + re-derive + sanity gauntlet. Choking is working-memory capture;
+  overlearning + pressure practice prevents it (Beilock & Carr 2005:
+  https://pubmed.ncbi.nlm.nih.gov/15686575/). Cyclic sighing for rapid arousal reduction
+  (Stanford RCT) and anxiety-as-excitement reappraisal (Brooks 2014:
+  https://pubmed.ncbi.nlm.nih.gov/24364682/). Expressive writing: original Science RCTs
+  positive, replications failed — flagged mixed.
+- **Math readiness:** basic-skills quiz predicts stats grades; calculus doesn't (Johnson
+  & Kuennen 2006: https://jse.amstat.org/v14n2/johnson.html; replicated Lunsford & Poplin
+  2011 n=760: https://jse.amstat.org/v19n1/lunsford.pdf). 38% of stats students failed
+  1/2 ÷ 2/3. CUNY RCT: algebra-placement failers PASSED college stats at 56% with weekly
+  support vs 39% in remedial algebra, and graduated more (Logue et al. 2016/2019:
+  https://journals.sagepub.com/doi/10.3102/0162373719848777). 15-item diagnostic in
+  performance-protocol.md.
+- **Environment:** phone-break depletion (Kang & Kurtzberg 2019:
+  https://akjournals.com/view/journals/2006/8/3/article-p395.xml), notifications disrupt
+  even unchecked (Stothart 2015), students self-interrupt in <6 min with devices present
+  (Rosen 2013); lyrical music impairs memory work regardless of preference (Perham);
+  Pomodoro's 25/5 is folklore — self-regulated breaks matched or beat it (Biwer 2023);
+  wakeful rest after learning aids retention 7 days out (Dewar 2012); paper-first
+  justified by screen-reading penalty meta-analyses + working-memory offloading (the
+  Mueller-Oppenheimer handwriting study itself didn't replicate — flagged).
+
+## 7. Open items (to resolve after July 1, 2026)
+
+1. Pull the real section syllabus: grade breakdown, exam count/dates, proctoring rules,
+   whether chi-square/ANOVA are included, exact MyLab assignment list.
+2. Confirm textbook edition from the course shell/bookstore listing.
+3. Re-map the week-by-week schedule in `study-guide.md` to the actual due dates.

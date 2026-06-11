@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Climb to 100 — MAT-124 Statistics RPG</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="fx"></canvas>
+
+<!-- ===================== HOME / DASHBOARD ===================== -->
+<div id="home" class="view">
+  <header class="hud">
+    <div class="hud-left">
+      <h1>THE CLIMB TO <span class="hundred">100</span></h1>
+      <div class="subtitle">MAT-124 Statistics · County College of Morris</div>
+    </div>
+    <div class="hud-right">
+      <div class="stat-chip" id="streakChip" title="Daily streak — one question keeps it alive. Freezes protect missed days.">🔥 <span id="streakNum">0</span></div>
+      <div class="stat-chip" title="Streak freezes left this month">🧊 <span id="freezeNum">2</span></div>
+      <button class="icon-btn" id="themeBtn" title="Dark / light mode">🌙</button>
+      <button class="icon-btn" id="muteBtn" title="Sound on/off">🔊</button>
+    </div>
+  </header>
+
+  <section class="level-panel">
+    <div class="level-row">
+      <div class="level-badge" id="levelBadge">1</div>
+      <div class="level-info">
+        <div class="level-title" id="levelTitle">Data Rookie</div>
+        <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+        <div class="xp-text" id="xpText">0 XP</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quest-panel">
+    <h2>📜 Today's Quests <span class="quest-bonus" id="questBonus"></span></h2>
+    <div id="questList"></div>
+  </section>
+
+  <section class="actions">
+    <button class="big-btn primary" id="smartBtn">⚡ SMART SESSION<small id="smartSub">reviews first, then your weakest unit</small></button>
+    <div id="diagBanner"></div>
+    <div id="gauntletBanner"></div>
+    <div class="review-due" id="reviewDue"></div>
+  </section>
+
+  <section class="units">
+    <h2>🗺️ The Map</h2>
+    <div id="unitGrid"></div>
+  </section>
+
+  <footer class="foot">
+    <span id="totalsLine"></span>
+    <button class="link-btn" id="resetBtn">reset save</button>
+  </footer>
+</div>
+
+<!-- ===================== QUIZ / BATTLE ===================== -->
+<div id="quiz" class="view hidden">
+  <header class="hud slim">
+    <button class="icon-btn" id="quitBtn" title="End session">← End</button>
+    <div class="quiz-title" id="quizTitle">Unit 1</div>
+    <div class="hud-right">
+      <div class="stat-chip">🔥 <span id="qStreakNum">0</span></div>
+      <div class="stat-chip xp-chip">⚡ <span id="qXpNum">0</span></div>
+    </div>
+  </header>
+
+  <div class="boss-bar hidden" id="bossBar">
+    <div class="boss-face" id="bossFace">👹</div>
+    <div class="boss-meta">
+      <div class="boss-name" id="bossName">Boss</div>
+      <div class="hp-bar"><div class="hp-fill" id="hpFill"></div></div>
+    </div>
+    <div class="boss-score" id="bossScore"></div>
+  </div>
+
+  <div class="progress-line"><div class="progress-fill" id="progFill"></div></div>
+
+  <main class="q-card" id="qCard">
+    <div class="q-tag" id="qTag"></div>
+    <div class="q-stem" id="qStem"></div>
+    <div class="q-options" id="qOptions"></div>
+    <div class="lock-row hidden" id="lockRow">
+      <button class="lock-btn sure" id="lockSure">🔒 Lock in — sure</button>
+      <button class="lock-btn unsure" id="lockUnsure">🤔 Lock in — not sure</button>
+    </div>
+    <div class="feedback hidden" id="feedback">
+      <div class="fb-head" id="fbHead"></div>
+      <div class="fb-expl" id="fbExpl"></div>
+      <button class="big-btn primary" id="nextBtn">Next ➜</button>
+    </div>
+  </main>
+</div>
+
+<!-- ===================== MODALS ===================== -->
+<div id="modal" class="modal hidden">
+  <div class="modal-card" id="modalCard"></div>
+</div>
+
+<div id="toasts"></div>
+
+<script src="questions.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

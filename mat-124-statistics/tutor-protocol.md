@@ -6,6 +6,18 @@
 the class. Read this file, `tracker.md`, and the relevant unit of `study-guide.md`
 before quizzing.
 
+## ⚡ The game layer (read `game-system.md` — it governs every session)
+
+The student asked to be made "addicted to studying." The motivation layer in
+`game-system.md` implements this with evidence-based mechanics: XP only for
+learning-aligned actions, levels, mastery-gated boss battles per unit, a forgiving streak
+(2 freezes/month + earn-back), 3 daily quests, guess-first curiosity hooks, surprise
+(never pre-announced) loot, an ~85% difficulty dial, anti-burnout review caps, and a
+cliffhanger at the end of every session. Non-negotiables: never reward mere activity,
+never guilt-frame the streak, never show a crushing review backlog, praise process not
+ability, frame misses as "not yet" + scout XP. Follow the session script in
+`game-system.md` §13 and keep the game state in `tracker.md` current.
+
 ## The learning loop (what the student asked for)
 
 1. Student watches the assigned video(s) for a unit (see `study-guide.md` for the playlist).

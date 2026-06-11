@@ -8,6 +8,7 @@ July 1 – August 18, 2026, Prof. Deanne Stigliano.
 | File | What it is |
 |------|-----------|
 | `study-guide.md` | Master guide: course facts, 7-week plan, per-unit videos + formulas + TI-84 commands + misconception warnings, final-exam question types, MyLab tactics |
+| `game-system.md` | **The Climb to 100** — XP, levels, boss battles, streaks with freezes, daily quests, surprise loot, 85% difficulty dial (all evidence-based) |
 | `question-bank.md` | 98 multiple-choice questions (balanced answer letters, misconception-targeted distractors, all computations verified) |
 | `tracker.md` | Missed/unsure question log + spaced-review schedule + session log — **the memory between sessions** |
 | `tutor-protocol.md` | Instructions for the AI tutor: how to quiz (one at a time), when to re-ask misses, mastery rules |

@@ -153,6 +153,94 @@ https://www.youtube.com/playlist?list=PL5102DFDC6790F3D0 (Prof Leonard) ·
 https://www.bcfoltz.com/stats-101/ (Foltz). jbstatistics also has a free ~450-pp textbook
 with exercises/answers: https://www.jbstatistics.com/text-resources/.
 
+## 8. Motivation science behind the game layer (added June 11, 2026)
+
+Second deep-research pass (5 agents: SDT/reward-undermining, gamification meta-analyses,
+habit & behavioral design, Duolingo/Anki case studies, math-specific motivation). Design
+implemented in `game-system.md`. Key verified findings:
+
+**Gamification works — when tied to learning, not activity.** Meta-analytic effects on
+actual learning: g = 0.49 cognitive (Sailer & Homner 2020:
+https://link.springer.com/article/10.1007/s10648-019-09498-w), g ≈ 0.50 overall (Bai, Hew
+& Huang 2020), g = 0.46 (Huang et al. 2020). The canonical backfire — Hanus & Fox 2015,
+where a semester of badges-for-showing-up + public leaderboard LOWERED intrinsic
+motivation and exam scores via reduced intrinsic motivation
+(https://www.sciencedirect.com/science/article/abs/pii/S0360131514002000) — is exactly the
+design our system avoids.
+
+**Reward-undermining boundaries (Deci, Koestner & Ryan 1999 meta-analysis, 128
+experiments):** expected tangible rewards contingent on engaging (d = −0.40) or completing
+(d = −0.36) a task undermine intrinsic motivation; UNEXPECTED rewards and informational
+verbal praise (d = +0.33) do not
+(https://www.semanticscholar.org/paper/8ad9801baea65b40fbbe6fc56e34b2b7be47d0ba). Hence:
+surprise loot yes, pre-announced bribes no; process praise yes ("you caught the σ-vs-SE
+trap"), ability praise no (Mueller & Dweck 1998:
+https://pubmed.ncbi.nlm.nih.gov/9686450/).
+
+**Streak design (Duolingo's own experiments):** 7-day streak → 2.4× next-day return
+(https://blog.duolingo.com/how-duolingo-streak-builds-habit/); TWO auto-equipped streak
+freezes beat both zero and three; free "earn-back" repair beat purchasable repair; streak
+wagers +14% retention; daily quests coincided with +25% DAU (sources in
+https://github.com/ChatPRD/lennys-podcast-transcripts/blob/main/episodes/jackson-shuttleworth/transcript.md
+and https://duolingo.deconstructoroffun.com/mechanics/streaks). Forgiveness measurably
+outperforms punishment. Broken streaks demotivate sharply (Silverman & Barasch 2023:
+https://academic.oup.com/jcr/article-abstract/49/6/1095/6623414) — hence freezes,
+earn-back, and "progress never resets" framing.
+
+**Anti-burnout (Anki's failure mode):** each new item generates ~7–10 future reviews;
+uncapped intake + inbox-zero streaks produce debt spirals and quitting
+(https://memoforge.app/blog/medical-school-anki-burnout-manage-1000-daily-cards/). Hence:
+12-review/day cap, backlog flattening, no raw-backlog display, no permanent difficulty
+punishment (FSRS lesson: https://forums.ankiweb.net/t/does-fsrs-solve-ease-hell/38275).
+
+**Habit mechanics:** implementation intentions d = 0.65 (Gollwitzer & Sheeran:
+https://cancercontrol.cancer.gov/sites/default/files/2020-06/goal_intent_attain.pdf);
+~66 days median to automaticity, one missed day is noise (Lally 2010:
+https://onlinelibrary.wiley.com/doi/10.1002/ejsp.674); tiny entry behavior + immediate
+celebration (Fogg: https://www.behaviormodel.org/); endowed progress 34% vs 19% completion
+(Nunes & Drèze 2006: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=991962);
+goal-gradient acceleration near milestones (Kivetz 2006:
+https://home.uchicago.edu/ourminsky/Goal-Gradient_Illusionary_Goal_Progress.pdf);
+emergency reserves (2 pre-authorized skips) raised goal attainment up to 40% (Sharif &
+Shu: https://anderson-review.ucla.edu/emergency-reserves/); fresh-start effect for
+relaunching after lapses (Dai, Milkman & Riis 2014:
+https://pubsonline.informs.org/doi/10.1287/mnsc.2014.1901).
+
+**Difficulty & goals:** optimal learning at ~85% success / ~15% error (Wilson et al. 2019:
+https://www.nature.com/articles/s41467-019-12552-4); proximal subgoals built skill,
+self-efficacy AND intrinsic interest in math practice while distal goals did nothing
+(Bandura & Schunk 1981:
+https://uploads-ssl.webflow.com/59faaf5b01b9500001e95457/5bc552d85141987915dab842_Bandura%20%26%20Schunk%2C%201981.pdf);
+interleaved practice 61% vs 38% (d = 0.83) in a preregistered RCT (Rohrer et al. 2020:
+https://files.eric.ed.gov/fulltext/ED595322.pdf).
+
+**Curiosity & anxiety:** committed guesses before learning boost memory (prediction
+effect, Brod: https://www.nature.com/articles/s41539-019-0056-y; pretesting: Richland,
+Kornell & Kao 2009: https://learninglab.uchicago.edu/Pre-Testing_files/RichlandKornellKao.pdf);
+high-curiosity questions enhance retention days later (Kang et al. 2009:
+https://pubmed.ncbi.nlm.nih.gov/19619181/); frequent low-stakes retrieval practice REDUCES
+test anxiety — 72% of students reported less test nervousness (Agarwal et al. 2014:
+https://www.sciencedirect.com/science/article/abs/pii/S221136811400059X); 10-minute
+expressive writing before a high-stakes exam boosts scores for anxious students (Ramirez &
+Beilock 2011, Science). Statistics anxiety is common and treatable via early wins +
+low-stakes quizzing (Onwuegbuzie & Wilson 2003:
+https://www.tandfonline.com/doi/abs/10.1080/1356251032000052447).
+
+**Goal framing for the 100% target:** perfectionistic STRIVINGS correlate positively with
+achievement (r ≈ +.24) while perfectionistic CONCERNS correlate negatively and drive test
+anxiety (Madigan meta-analysis:
+https://www.semanticscholar.org/paper/11f6f1f4915868b1016af879563fc88bf3dd1230);
+performance-approach goals predict grades, mastery goals predict interest — run both
+(Harackiewicz; Elliot & McGregor 2×2 framework). Hence: "100%" is the approach-framed exam
+goal; practice runs on mastery goals where errors are the mechanism.
+
+**Novelty management:** gamification effects sag around week 4 and recover by 6–10
+(Rodrigues et al. 2022: https://link.springer.com/article/10.1186/s41239-021-00314-6);
+refreshed mechanics sustain engagement (Tsay et al. 2020:
+https://onlinelibrary.wiley.com/doi/10.1111/jcal.12385) — hence the scheduled week-4
+mechanic drop. Largest learning effects occur at 1–3 month durations (Bai et al. 2020) —
+bracketing this 7-week course.
+
 ## 7. Open items (to resolve after July 1, 2026)
 
 1. Pull the real section syllabus: grade breakdown, exam count/dates, proctoring rules,

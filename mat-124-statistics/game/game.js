@@ -96,6 +96,8 @@ function freshState() {
     counters: { revenge: 0, maxCombo: 0 },
     history: {},                      // date -> {a: answered, c: correct, xp}
     luckyDate: null,                  // date the daily lucky question was claimed
+    daily: null,                      // {date, score, streak} for the Daily Challenge
+    seenIntro: false,
     muted: false,
     theme: null,           // null = follow system preference; else 'dark' | 'light'
   };
@@ -204,6 +206,7 @@ const BADGES = [
   { id: "deck", icon: "🃏", name: "Deck Builder", desc: "Master 10 questions", check: () => masteredCount() >= 10 },
   { id: "palace", icon: "🏛️", name: "Memory Palace", desc: "Master 50 questions", check: () => masteredCount() >= 50 },
   { id: "quest", icon: "📜", name: "Questmaster", desc: "Clear all 3 daily quests", check: s => s.quests.length === 3 && s.quests.every(q => q.done) },
+  { id: "daily7", icon: "👑", name: "Daily Devotee", desc: "Complete 7 Daily Challenges", check: s => (s.counters.dailies || 0) >= 7 },
 ];
 function awardBadges() {
   for (const b of BADGES) {
@@ -496,6 +499,31 @@ function startQuickFive() {
   showView("quiz"); renderQuestion();
 }
 
+function startDaily() {
+  const today = todayStr();
+  if (S.daily && S.daily.date === today) {
+    modal(`<div class="big-emoji">🗓️</div><h2>Already conquered today</h2>
+      <p>You scored <b>${S.daily.score}/10</b>. A fresh challenge drops at midnight — same 10 questions for everyone, one shot.</p>
+      <button class="big-btn primary" onclick="closeModal()">Back tomorrow ➜</button>`);
+    return;
+  }
+  touchStreak(); ensureQuests();
+  const qs = seededPick(today + "daily", BANK, 10);
+  session = {
+    queue: qs.map(q => ({ id: q.id, review: false })), i: 0, mode: "daily",
+    picked: null, answered: false, stats: { right: 0, wrong: 0, xp: 0 },
+  };
+  $("quizTitle").textContent = "🗓️ Daily Challenge";
+  $("bossBar").classList.add("hidden");
+  showView("quiz"); renderQuestion();
+  modal(`
+    <div class="big-emoji">🗓️</div>
+    <h2>Daily Challenge</h2>
+    <p>Today's 10 — fixed for the whole day, one attempt only. Score 8+ for the <b>+30 XP Daily Crown</b>.</p>
+    <p>Misses still enter your review deck. No retries until midnight.</p>
+    <button class="big-btn primary" onclick="closeModal()">Take it on ➜</button>`);
+}
+
 function startGauntlet() {
   touchStreak(); ensureQuests();
   const pool = [...BANK];
@@ -727,6 +755,28 @@ function endSession(early) {
     return;
   }
 
+  if (session.mode === "daily") {
+    const today = todayStr();
+    const prev = S.daily;
+    const dStreak = prev && prev.date === addDays(today, -1) ? prev.streak + 1 : 1;
+    S.daily = { date: today, score: st.right, streak: dStreak };
+    S.counters.dailies = (S.counters.dailies || 0) + 1;
+    const crowned = st.right >= 8;
+    if (crowned) { grantXP(30, "daily crown"); confetti(150); sfx("level"); }
+    save(); awardBadges();
+    modal(`
+      <div class="big-emoji">${crowned ? "👑" : "🗓️"}</div>
+      <h2>${crowned ? "DAILY CROWN!" : "Daily Challenge done"}</h2>
+      <div class="modal-stats">
+        <div>${st.right}/10<span>score</span></div>
+        <div>${dStreak}<span>daily streak</span></div>
+        <div>+${st.xp + (crowned ? 30 : 0)}<span>XP</span></div>
+      </div>
+      <p>${crowned ? "8+ on one attempt, no retries — that's exam-grade performance." : "Misses are queued for review. Tomorrow's challenge is a fresh 10."}</p>
+      <button class="big-btn primary" onclick="closeModal(); showView('home'); renderHome();">Back to the map ➜</button>`);
+    return;
+  }
+
   if (session.mode === "gauntlet") {
     const ms = Date.now() - session.startMs;
     const mm = Math.floor(ms / 60000), ss = String(Math.floor(ms / 1000) % 60).padStart(2, "0");
@@ -829,6 +879,13 @@ function renderHome() {
     banner.querySelector("#diagRetake").onclick = startDiag;
   }
 
+  const db = $("dailyBanner");
+  const dailyDone = S.daily && S.daily.date === todayStr();
+  db.innerHTML = dailyDone
+    ? `<div style="text-align:center;color:var(--dim);font-size:12px;margin-top:8px">🗓️ daily challenge: <b>${S.daily.score}/10</b> today · streak ${S.daily.streak} 👑 · new one at midnight</div>`
+    : `<button class="big-btn" style="background:linear-gradient(135deg,var(--gold),var(--gold2));color:#2a1c00;margin-top:10px" id="dailyBtn">🗓️ DAILY CHALLENGE<small>today's 10 — one attempt · 8+ wins the +30 XP crown${S.daily ? ` · streak ${S.daily.streak}` : ""}</small></button>`;
+  if (!dailyDone) db.querySelector("#dailyBtn").onclick = startDaily;
+
   const gb = $("gauntletBanner");
   if (todayStr() >= GAUNTLET_UNLOCK) {
     gb.innerHTML = `<button class="big-btn" style="background:linear-gradient(135deg,var(--blue),#2f5fd0);color:#fff;margin-top:10px" id="gauntletBtn">🌀 GAUNTLET MODE<small>${GAUNTLET_SIZE} random questions vs the clock — clear 7 for +25 XP</small></button>`;
@@ -892,7 +949,9 @@ function renderHome() {
   const t = S.history[today] || { a: 0, c: 0, xp: 0 };
   let week = 0;
   for (let i = 0; i < 7; i++) { const h = S.history[addDays(today, -i)]; if (h) week += h.a; }
-  $("climbStats").textContent = `today: ${t.a} answered (+${t.xp} XP) · last 7 days: ${week} · paint a square green every day and the Dragon falls`;
+  const tmrw = addDays(today, 1);
+  const dueTomorrow = Object.values(S.perQ).filter(st => st.due && st.due <= tmrw && st.due > today).length;
+  $("climbStats").textContent = `today: ${t.a} answered (+${t.xp} XP) · last 7 days: ${week} · tomorrow: ${dueTomorrow} review${dueTomorrow === 1 ? "" : "s"} due · paint a square green every day and the Dragon falls`;
 
   const bg = $("badgeGrid"); bg.innerHTML = "";
   for (const b of BADGES) {
@@ -1047,5 +1106,40 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.removeItem(SAVE_KEY); load(); ensureQuests(); renderHome();
     }
   };
+  $("exportBtn").onclick = () => {
+    const text = JSON.stringify(S);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => toast("💾 Save copied to clipboard — stash it somewhere safe (notes app, email to yourself).", true));
+    } else {
+      modal(`<h2>💾 Your save</h2><p style="text-align:left;word-break:break-all;font-size:10px;max-height:40vh;overflow:auto">${text.replace(/</g, "&lt;")}</p><button class="big-btn primary" onclick="closeModal()">Done</button>`);
+    }
+  };
+  $("importBtn").onclick = () => {
+    const txt = prompt("Paste an exported save to restore it (this REPLACES current progress):");
+    if (!txt) return;
+    try {
+      const obj = JSON.parse(txt);
+      if (!obj || typeof obj.xp !== "number") throw new Error("bad save");
+      localStorage.setItem(SAVE_KEY, JSON.stringify(obj));
+      load(); ensureQuests(); applyTheme(); renderHome();
+      toast("📥 Save imported — welcome back, climber.", true);
+    } catch {
+      alert("That doesn't look like a valid save. Nothing was changed.");
+    }
+  };
   renderHome();
+  if (!S.seenIntro) {
+    S.seenIntro = true; save();
+    modal(`
+      <div class="big-emoji">🏔️</div>
+      <h2>Welcome to THE CLIMB TO 100</h2>
+      <p style="text-align:left"><b>The loop:</b><br>
+      1️⃣ Watch a unit's videos (links in the study guide)<br>
+      2️⃣ <b>Train</b> the unit here — one question at a time, misses come back until they're yours<br>
+      3️⃣ At 80% power, fight the unit's <b>boss</b> under real test conditions<br>
+      🐉 Beat all of them, slay the Final Exam Dragon, walk into the real final ready for 100.</p>
+      <p style="text-align:left">🔥 One question a day keeps your streak. 🗓️ The Daily Challenge crowns 8+/10. ⌨️ Keys 1–4 answer, Enter locks in.</p>
+      <p><b>Start with the 🧪 Readiness Check</b> — 15 quick questions to find what to patch before the course opens.</p>
+      <button class="big-btn primary" onclick="closeModal()">Begin the climb ➜</button>`);
+  }
 });

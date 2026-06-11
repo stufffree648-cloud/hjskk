@@ -10,7 +10,7 @@ July 1 – August 18, 2026, Prof. Deanne Stigliano.
 localhost:8000). To put it online: GitHub → Settings → Pages → deploy from this
 branch → then visit `https://<you>.github.io/hjskk/mat-124-statistics/game/`.
 
-What's in it: all **208 verified questions** · XP & 8 ranks (Data Rookie →
+What's in it: all **268 verified questions** · XP & 8 ranks (Data Rookie →
 Statistician Supreme) · **10 animated boss battles** (The Biased Pollster → The
 Final Exam Dragon) with HP bars, unlocked by unit mastery · streaks with 2
 monthly freezes & fresh-start protection · 3 daily quests + bonus chest ·

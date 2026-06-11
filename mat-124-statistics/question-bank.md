@@ -1382,3 +1382,247 @@ causal validity, not representativeness — the two pillars are independent of e
 - D) re-sorting the rows of the data table
 
 **Answer: A.** Influential points — extreme in x AND off the pattern — grab the line and crush r.
+
+---
+
+## Wave 3 — extra depth on the most-failed units (5, 6, 7) + Procedure Roulette
+
+**U5-Q16.** Heights ~ N(70, 8). P(60 < X < 80) = ?
+- A) 0.7887
+- B) 0.8944
+- C) 0.2113
+- D) 0.1056
+
+**Answer: A.** z runs from −1.25 to 1.25 → 0.8944 − 0.1056 = 0.7887. (B forgets to subtract the left tail.)
+
+**U5-Q17.** SAT scores ~ N(500, 90). For random samples of n = 36, P(x̄ > 515) = ?
+- A) 0.4338
+- B) 0.8413
+- C) 0.1587
+- D) 0.0475
+
+**Answer: C.** SE = 90/√36 = 15; z = (515−500)/15 = 1 → 0.1587. (A uses σ = 90, the SD-vs-SE trap.)
+
+**U5-Q18.** A fair coin (p = 0.5) is flipped 400 times. P(the sample proportion of heads exceeds 0.55) = ?
+- A) 0.4207
+- B) 0.3085
+- C) 0.0500
+- D) 0.0228
+
+**Answer: D.** SE = √(0.5·0.5/400) = 0.025; z = 0.05/0.025 = 2 → 0.0228.
+
+**U5-Q19.** A population is heavily skewed. The usual rule of thumb says normal-based methods for x̄ are safe once:
+- A) n ≥ 5
+- B) n ≥ 30
+- C) n ≥ 100
+- D) the data are transformed to be symmetric
+
+**Answer: B.** The classic CLT cutoff — by n ≈ 30 the sampling distribution of x̄ is approximately normal for most population shapes.
+
+**U5-Q20.** σ = 10. Which sample size gives the SMALLEST standard error of x̄?
+- A) n = 25
+- B) n = 100
+- C) they're all equal — SE depends only on σ
+- D) n = 400
+
+**Answer: D.** SE = 10/√n: 2.0, 1.0, and 0.5 — bigger samples pin down the mean tighter.
+
+**U5-Q21.** The z-value with area 0.975 to its LEFT is:
+- A) 1.96
+- B) 0.975
+- C) 1.645
+- D) 2.576
+
+**Answer: A.** That's why 1.96 is the 95% critical value — 2.5% sits in each tail.
+
+**U5-Q22.** IQ ~ N(100, 15). P(X < 70) = ?
+- A) 0.0668
+- B) 0.0228
+- C) 0.9772
+- D) 0.1587
+
+**Answer: B.** z = (70−100)/15 = −2 → 0.0228. (C is the complement; A uses z = −1.5.)
+
+**U5-Q23.** The population's shape is unknown and possibly skewed, and the sample has n = 12. Normal-based inference for x̄ is:
+- A) fine — the CLT always applies
+- B) fine — 12 exceeds 10
+- C) not safe — with small n you need the population itself to be approximately normal
+- D) impossible at any sample size
+
+**Answer: C.** The CLT needs large n; for small samples the normality must come from the population.
+
+**U6-Q16.** The critical value z* for a 99% confidence interval is:
+- A) 1.96
+- B) 2.576
+- C) 1.645
+- D) 3.000
+
+**Answer: B.** 99% leaves 0.5% per tail → z₀.₉₉₅ ≈ 2.576.
+
+**U6-Q17.** A confidence interval for μ is (10.2, 14.6). The point estimate and margin of error are:
+- A) 10.2 and 4.4
+- B) 12.4 and 4.4
+- C) 14.6 and 2.2
+- D) 12.4 and 2.2
+
+**Answer: D.** Center = (10.2+14.6)/2 = 12.4; half-width = 2.2.
+
+**U6-Q18.** n = 400 and p̂ = 0.50. The 95% margin of error for p is about:
+- A) 0.049
+- B) 0.025
+- C) 0.098
+- D) 0.0006
+
+**Answer: A.** ME = 1.96·√(0.25/400) = 1.96(0.025) ≈ 0.049 — the classic "±5 points" of polls. (B forgets z*.)
+
+**U6-Q19.** For the same confidence level and data, t* compared to z* is always:
+- A) smaller
+- B) equal
+- C) larger — t compensates for estimating σ with s
+- D) sometimes smaller, sometimes larger
+
+**Answer: C.** The t distribution has heavier tails (extra uncertainty from using s), so its critical values exceed z's, shrinking toward z as df grows.
+
+**U6-Q20.** Keeping the same data but raising the confidence level from 90% to 99% makes the margin of error:
+- A) larger
+- B) smaller
+- C) unchanged
+- D) exactly zero
+
+**Answer: A.** Higher confidence demands a bigger critical value → wider net.
+
+**U6-Q21.** A 95% CI for μ is (45.7, 54.3). Testing H₀: μ = 55 vs Hₐ: μ ≠ 55 at α = 0.05:
+- A) fail to reject — 55 is close to the upper bound
+- B) accept H₀
+- C) the CI cannot be used for this
+- D) reject H₀ — 55 lies outside the interval
+
+**Answer: D.** A 95% CI contains exactly the H₀ values that survive a two-tailed α = 0.05 test; 55 doesn't.
+
+**U6-Q22.** To estimate a mean within E = 3 with 95% confidence when σ = 15, the required n is:
+- A) 96
+- B) 25
+- C) 97
+- D) 10
+
+**Answer: C.** n = (1.96·15/3)² = 96.04 → always round UP.
+
+**U6-Q23.** Which set of conditions justifies a t-interval for μ?
+- A) the sample mean must equal the population mean
+- B) a random sample AND (population roughly normal OR n large)
+- C) σ must be known exactly
+- D) the data must contain no variability
+
+**Answer: B.** Random sampling plus normality-or-large-n is the standard checklist; σ known would call for z instead.
+
+**U7-Q16.** Test H₀: μ = 8 hours against Hₐ: μ ≠ 8 with x̄ = 7.4, s = 1.8, n = 36. The test statistic is:
+- A) t = −0.33
+- B) t = −3.6
+- C) t = −2.0
+- D) t = 0.60
+
+**Answer: C.** SE = 1.8/√36 = 0.3; t = (7.4−8)/0.3 = −2.0. (A divides by s; B divides by s/n.)
+
+**U7-Q17.** The degrees of freedom for that test are:
+- A) 35
+- B) 36
+- C) 34
+- D) 6
+
+**Answer: A.** df = n − 1 = 35.
+
+**U7-Q18.** That test's two-tailed p-value is about 0.053. At α = 0.05 the decision is:
+- A) reject H₀ — it's close enough
+- B) accept H₀ — the mean is exactly 8
+- C) flip a coin — the evidence is perfectly balanced
+- D) fail to reject H₀ — 0.053 exceeds 0.05, even if barely
+
+**Answer: D.** The rule is mechanical: reject only when p ≤ α. Report the near-miss honestly, but the formal decision stands.
+
+**U7-Q19.** Testing the claim "fewer than 40% of students commute" yields z = −1.8. The p-value (left-tailed) is:
+- A) 0.9641
+- B) 0.0359
+- C) 0.0718
+- D) 0.1800
+
+**Answer: B.** P(Z < −1.8) = 0.0359. (C doubles it — but this is one-tailed; A is the wrong tail.)
+
+**U7-Q20.** With that p-value (0.0359) and α = 0.05:
+- A) fail to reject H₀ — insufficient evidence
+- B) accept H₀ — commuting is exactly 40%
+- C) the test is invalid because z is negative
+- D) reject H₀ — sufficient evidence that fewer than 40% commute
+
+**Answer: D.** 0.0359 ≤ 0.05 → reject, and conclude in the claim's direction and context.
+
+**U7-Q21.** Using α = 0.05 means that IF H₀ is true:
+- A) the test will be wrong 95% of the time
+- B) β must equal 0.95
+- C) there is a 5% chance of wrongly rejecting it (a Type I error)
+- D) the p-value will always be 0.05
+
+**Answer: C.** α is the Type I error rate, fixed before the data are seen.
+
+**U7-Q22.** A result is significant at α = 0.01. At α = 0.05 the same result is:
+- A) also significant — p ≤ 0.01 implies p ≤ 0.05
+- B) not necessarily significant
+- C) significant only if n is large
+- D) exactly borderline
+
+**Answer: A.** Clearing the stricter bar clears the looser one automatically.
+
+**U7-Q23.** Before a one-proportion z-test, the condition to verify is:
+- A) the sample mean is normal
+- B) np₀ ≥ 10 and n(1−p₀) ≥ 10 — using the H₀ value p₀, not p̂
+- C) σ is known
+- D) the population is smaller than the sample
+
+**Answer: B.** The test is computed under H₀, so the normality check uses p₀.
+
+**MX-Q11.** Estimate the average weight change for 15 people measured before AND after a program. Procedure:
+- A) two-sample independent t-interval
+- B) one-proportion z-interval
+- C) chi-square test of independence
+- D) paired t-interval on the differences
+
+**Answer: D.** Same people, two measurements → dependent samples → analyze the differences.
+
+**MX-Q12.** Does the percent of defective parts differ between two factories (random samples from each)? Procedure:
+- A) paired t-test
+- B) two-proportion z-test
+- C) one-way ANOVA
+- D) linear regression
+
+**Answer: B.** Two independent groups, categorical (defective/not) outcome.
+
+**MX-Q13.** Describe the relationship between hours studied and exam score (both quantitative). Procedure:
+- A) correlation and least-squares regression
+- B) chi-square goodness-of-fit
+- C) two-sample t-test
+- D) one-proportion z-test
+
+**Answer: A.** Two quantitative variables → scatterplot, r, regression line.
+
+**MX-Q14.** A casino die is rolled 600 times; you record how often each face appeared. To test fairness:
+- A) one-sample t-test
+- B) two-proportion z-test
+- C) chi-square goodness-of-fit test
+- D) linear regression
+
+**Answer: C.** One categorical variable against claimed proportions (1/6 each) → GOF, df = 5.
+
+**MX-Q15.** Estimate the percentage of all CCM students who work, from a random sample of 300. Procedure:
+- A) one-sample t-interval
+- B) one-proportion z-interval
+- C) paired t-interval
+- D) chi-square test of independence
+
+**Answer: B.** One categorical yes/no variable, goal = estimate a proportion.
+
+**MX-Q16.** Compare the mean customer wait time across FOUR bank branches. Procedure:
+- A) six separate two-sample t-tests
+- B) chi-square test of homogeneity
+- C) two-sample t-test on the largest and smallest
+- D) one-way ANOVA
+
+**Answer: D.** 3+ group means in one analysis; running many t-tests inflates the Type I error rate.

@@ -80,6 +80,8 @@ function freshState() {
     totals: { answered: 0, correct: 0 },
     cliffhanger: null,
     diagDone: null,
+    badges: {},                       // id -> date earned
+    counters: { revenge: 0, maxCombo: 0 },
     muted: false,
     theme: null,           // null = follow system preference; else 'dark' | 'light'
   };
@@ -101,6 +103,38 @@ function qstate(id) {
   return S.perQ[id];
 }
 function isMastered(id) { const q = S.perQ[id]; return !!q && q.days.length >= 3; }
+
+/* ---------------- trophies ---------------- */
+function masteredCount() {
+  return Object.values(S.perQ).filter(st => st.days && st.days.length >= 3).length;
+}
+const BADGES = [
+  { id: "first", icon: "👣", name: "First Step", desc: "Answer your first question", check: s => s.totals.answered >= 1 },
+  { id: "scout", icon: "🧪", name: "Scouted", desc: "Finish the Readiness Check", check: s => !!s.diagDone },
+  { id: "week", icon: "🔥", name: "Week Warrior", desc: "Reach a 7-day streak", check: s => s.bestStreak >= 7 },
+  { id: "fort", icon: "🌋", name: "Fortnight Flame", desc: "Reach a 14-day streak", check: s => s.bestStreak >= 14 },
+  { id: "cent", icon: "💯", name: "Centurion", desc: "100 lifetime correct", check: s => s.totals.correct >= 100 },
+  { id: "spree", icon: "🌟", name: "Hot Streak Scholar", desc: "250 lifetime correct", check: s => s.totals.correct >= 250 },
+  { id: "blood", icon: "⚔️", name: "First Blood", desc: "Defeat any boss", check: s => Object.keys(s.bossCleared).length >= 1 },
+  { id: "hunter", icon: "🏹", name: "Boss Hunter", desc: "Defeat 5 bosses", check: s => Object.keys(s.bossCleared).length >= 5 },
+  { id: "flawless", icon: "💥", name: "Flawless", desc: "Perfect-clear a boss", check: s => Object.keys(s.bossPerfect).length >= 1 },
+  { id: "dragon", icon: "🐉", name: "DRAGONSLAYER", desc: "Defeat the Final Exam Dragon", check: s => !!s.bossCleared[10] },
+  { id: "comeback", icon: "🦅", name: "Comeback Kid", desc: "5 revenge clears", check: s => s.counters.revenge >= 5 },
+  { id: "fire", icon: "🎯", name: "On Fire", desc: "8-correct combo in one session", check: s => s.counters.maxCombo >= 8 },
+  { id: "deck", icon: "🃏", name: "Deck Builder", desc: "Master 10 questions", check: () => masteredCount() >= 10 },
+  { id: "palace", icon: "🏛️", name: "Memory Palace", desc: "Master 50 questions", check: () => masteredCount() >= 50 },
+  { id: "quest", icon: "📜", name: "Questmaster", desc: "Clear all 3 daily quests", check: s => s.quests.length === 3 && s.quests.every(q => q.done) },
+];
+function awardBadges() {
+  for (const b of BADGES) {
+    if (!S.badges[b.id] && b.check(S)) {
+      S.badges[b.id] = todayStr();
+      toast(`🏆 Trophy unlocked: ${b.icon} ${b.name} — ${b.desc}`, true);
+      sfx("loot"); confetti(70);
+    }
+  }
+  save();
+}
 
 /* ---------------- streak (forgiving by design) ---------------- */
 function touchStreak() {
@@ -246,7 +280,7 @@ function recordAnswer(q, correctPick, sure, isReviewDue) {
     st.tc++;
     if (!st.days.includes(today)) st.days.push(today);
 
-    if (st.lastWrong) { xp += 20; msgs.push("⚔️ REVENGE +20"); questEvent("rv2"); }
+    if (st.lastWrong) { xp += 20; msgs.push("⚔️ REVENGE +20"); S.counters.revenge++; questEvent("rv2"); }
     else if (wasMastered && !isReviewDue) { xp += 2; msgs.push("+2 (already mastered)"); }
     else if (isReviewDue) { xp += 15; msgs.push("🧹 review cleared +15"); questEvent("rev3"); }
     else { xp += 10; msgs.push("+10"); }
@@ -352,6 +386,21 @@ function startDiag() {
     <button class="big-btn primary" onclick="closeModal()">Begin 🔍</button>`);
 }
 
+function startQuickFive() {
+  touchStreak(); ensureQuests();
+  const u = weakestUnit();
+  const reviews = dueReviews().slice(0, 3).map(id => ({ id, review: true }));
+  const fill = unitQuestions(u)
+    .filter(q => !reviews.some(r => r.id === q.id))
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 5 - reviews.length)
+    .map(q => ({ id: q.id, review: false }));
+  session = { queue: [...reviews, ...fill], i: 0, mode: "practice", unit: u, picked: null, answered: false, stats: { right: 0, wrong: 0, xp: 0 } };
+  $("quizTitle").textContent = `⚡ Quick 5 — ${UNITS[u].name}`;
+  $("bossBar").classList.add("hidden");
+  showView("quiz"); renderQuestion();
+}
+
 function startGauntlet() {
   touchStreak(); ensureQuests();
   const pool = [...BANK];
@@ -410,8 +459,15 @@ function shuffled(n) {
   return a;
 }
 
+function updateComboChip() {
+  const c = (session && session.combo) || 0;
+  $("comboChip").classList.toggle("hidden", c < 2);
+  $("comboNum").textContent = c;
+}
+
 let optOrder = [];
 function renderQuestion() {
+  updateComboChip();
   const item = session.queue[session.i];
   const q = byId(item.id);
   session.picked = null; session.answered = false;
@@ -500,9 +556,23 @@ function lockIn(sure) {
     }
   }
 
-  sfx(isRight ? "good" : "bad");
+  // combo: consecutive corrects this session — rising pitch, milestone bonuses
+  if (isRight) {
+    session.combo = (session.combo || 0) + 1;
+    S.counters.maxCombo = Math.max(S.counters.maxCombo, session.combo);
+    if (session.combo % 5 === 0) {
+      grantXP(5, "combo");
+      toast(`🎯 COMBO ×${session.combo} — +5 bonus!`, true);
+    }
+  } else {
+    session.combo = 0;
+  }
+  updateComboChip();
+
+  sfx(isRight ? "good" : "bad", session.combo);
   const r = $("qCard").getBoundingClientRect();
   xpFloat(`+${res.xp} XP`, r.right - 70, r.top + 30);
+  awardBadges();
 
   const head = $("fbHead");
   if (isRight && sure) { head.textContent = "✅ Correct."; head.className = "fb-head good"; }
@@ -532,7 +602,7 @@ function endSession(early) {
   if (session.mode === "diag") {
     const score = st.right;
     S.diagDone = { score, date: todayStr() };
-    save();
+    save(); awardBadges();
     const weak = [...new Set(session.diagMisses)];
     let body;
     if (!weak.length && score === 15) {
@@ -582,7 +652,7 @@ function endSession(early) {
       S.bossCleared[session.unit] = true;
       if (perfect) S.bossPerfect[session.unit] = true;
       grantXP(perfect ? 75 : 50, "boss");
-      save(); confetti(220); sfx("level");
+      save(); awardBadges(); confetti(220); sfx("level");
       modal(`
         <div class="big-emoji">${perfect ? "💥" : "🏆"}</div>
         <h2>${BOSSES[String(session.unit)].name} DEFEATED${perfect ? " — FLAWLESS" : ""}!</h2>
@@ -616,6 +686,7 @@ function endSession(early) {
       </div>
       <p>${diffNote}</p>
       <p style="color:var(--purple)">📌 ${S.cliffhanger}</p>
+      <button class="big-btn" style="background:linear-gradient(135deg,var(--blue),#2f5fd0);color:#fff" onclick="closeModal(); startQuickFive();">⚡ One more quick 5</button>
       <button class="big-btn primary" onclick="closeModal(); showView('home'); renderHome();">Back to the map ➜</button>`);
   }
 }
@@ -692,7 +763,17 @@ function renderHome() {
   grid.querySelectorAll("[data-train]").forEach(b => (b.onclick = () => startPractice(+b.dataset.train)));
   grid.querySelectorAll("[data-boss]").forEach(b => (b.onclick = () => startBoss(+b.dataset.boss)));
 
-  $("totalsLine").textContent = `${S.totals.correct}/${S.totals.answered} lifetime correct · best streak ${S.bestStreak} 🔥 · 208 questions in the arsenal`;
+  const bg = $("badgeGrid"); bg.innerHTML = "";
+  for (const b of BADGES) {
+    const earned = S.badges[b.id];
+    const d = document.createElement("div");
+    d.className = "badge " + (earned ? "earned" : "locked");
+    d.title = earned ? `Earned ${earned}` : "Locked";
+    d.innerHTML = `<div class="b-icon">${earned ? b.icon : "🔒"}</div><div class="b-name">${b.name}</div><div class="b-desc">${b.desc}</div>`;
+    bg.appendChild(d);
+  }
+
+  $("totalsLine").textContent = `${S.totals.correct}/${S.totals.answered} lifetime correct · best streak ${S.bestStreak} 🔥 · ${masteredCount()} mastered · ${Object.keys(S.badges).length}/${BADGES.length} 🏆`;
 }
 
 /* ---------------- theme ---------------- */
@@ -755,7 +836,7 @@ function confetti(n) {
 
 /* ---------------- tiny synth sfx ---------------- */
 let AC = null;
-function sfx(kind) {
+function sfx(kind, combo) {
   if (S.muted) return;
   try {
     AC = AC || new (window.AudioContext || window.webkitAudioContext)();
@@ -768,7 +849,7 @@ function sfx(kind) {
       o.connect(g).connect(AC.destination);
       o.start(t + start); o.stop(t + start + dur + 0.05);
     };
-    if (kind === "good") { play(660, 0, 0.12); play(880, 0.1, 0.18); }
+    if (kind === "good") { const m = 1 + 0.05 * Math.min(combo || 0, 10); play(660 * m, 0, 0.12); play(880 * m, 0.1, 0.18); }
     else if (kind === "bad") { play(180, 0, 0.25, "square", 0.08); }
     else if (kind === "quest") { play(523, 0, 0.1); play(659, 0.09, 0.1); play(784, 0.18, 0.2); }
     else if (kind === "loot") { play(987, 0, 0.08); play(1318, 0.08, 0.22); }
@@ -778,6 +859,7 @@ function sfx(kind) {
 
 /* ---------------- wiring ---------------- */
 window.closeModal = closeModal;
+window.startQuickFive = startQuickFive;
 document.addEventListener("DOMContentLoaded", () => {
   load(); ensureQuests(); applyTheme();
   $("smartBtn").onclick = () => startPractice(weakestUnit());

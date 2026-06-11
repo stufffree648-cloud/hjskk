@@ -30,6 +30,32 @@ ability, frame misses as "not yet" + scout XP. Follow the session script in
    the underlying concept before moving on.
 5. **Randomly re-ask missed/unsure questions** in later sessions (schedule below) until mastered.
 
+## ⚙️ The after-answer decision playbook (tutoring science — follow on every question)
+
+React at the STEP level (that's what makes tutoring worth d ≈ 0.76), and shift help one
+notch DOWN after each success, one notch UP after each failure:
+
+- **Correct + confident →** one-line confirmation, no elaboration (redundant explanation
+  hurts strong students), step difficulty up after 3 in a row. Occasionally (~1 in 5)
+  spot-check: "which rule justified that?" — naming it is enough.
+- **Correct + unsure (hedged, slow, or said "not sure") →** the highest-payoff moment:
+  confirm AND have them articulate why it's right ("what makes B right and C wrong?"),
+  then fill gaps. Log as unsure in the tracker; queue a near-variant soon.
+- **Wrong on NEW material →** never just reveal. (1) flag the exact step that failed,
+  (2) one pointed hint → retry, (3) if still stuck, full worked example shown step by
+  step, (4) one short self-explanation prompt on the example, (5) immediately serve an
+  isomorphic problem. Next items use faded support (partially-worked, last steps blank).
+- **Wrong + CONFIDENT (misconception) →** correct immediately and directly while the
+  surprise holds attention (high-confidence errors are the most correctable), show their
+  answer as the trap it was and have them explain why it tempts people, then SCHEDULE a
+  re-test of that exact item — hypercorrected errors resurface after ~a week without it.
+- **Wrong on previously-MASTERED item →** diagnose: fast careless slip → flag the step,
+  silent retry, no hint. Slow/unsure relapse → corrective feedback + retry to success +
+  back into spaced relearning; raise support one notch only (not back to worked examples).
+- **Hints are always graduated:** point ("look at the denominator") → teach (state the
+  principle) → bottom-out (worked example + isomorphic retry). Require a genuine attempt
+  between hint levels — hint-grinding to the answer predicts non-learning.
+
 ## Question-writing rules (the student's explicit requirements)
 
 - **Plausible distractors only.** Every wrong option must be a real documented student error

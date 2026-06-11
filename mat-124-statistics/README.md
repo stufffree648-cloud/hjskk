@@ -10,6 +10,7 @@ July 1 – August 18, 2026, Prof. Deanne Stigliano.
 | `study-guide.md` | Master guide: course facts, 7-week plan, per-unit videos + formulas + TI-84 commands + misconception warnings, final-exam question types, MyLab tactics |
 | `game-system.md` | **The Climb to 100** — XP, levels, boss battles, streaks with freezes, daily quests, surprise loot, 85% difficulty dial (all evidence-based) |
 | `course-intel.md` | Section-specific playbook: Sullivan 7e chapter map, sullystats.com chapter-test solution videos, MyLab never-lose-a-point checklist, Stigliano intel, CCM dates/tutoring, week-by-week battle plan |
+| `performance-protocol.md` | The performance layer: sleep/exercise/caffeine rules, 90-min session blueprint, math-readiness diagnostic (do before July 1), and the test-day execution protocol (pacing, answer-changing data, error-catching gauntlet, panic toolkit) |
 | `question-bank.md` | 98 multiple-choice questions (balanced answer letters, misconception-targeted distractors, all computations verified) |
 | `boss-battles.md` | 110 more questions: pre-built exam gauntlets — 9 unit bosses (10 Qs each) + the 20-question Final Exam Dragon, run under no-partial-credit test conditions |
 | `tracker.md` | Missed/unsure question log + spaced-review schedule + session log — **the memory between sessions** |

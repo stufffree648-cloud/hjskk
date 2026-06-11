@@ -277,6 +277,53 @@ practice materials. Actionable synthesis lives in `course-intel.md`; key verdict
 - **Practice materials [HIGH]:** LA Mission College Math 227 posted Sullivan-keyed exams
   with keys (URLs in `course-intel.md` §5); ~275 Quizlet sets by Sullivan chapter.
 
+## 10. Performance layer (fourth research pass, June 11, 2026)
+
+Five agents: biology of memory, tutoring science, test-day execution, math readiness,
+study environment. Synthesis in `performance-protocol.md` and the tutor playbook in
+`tutor-protocol.md`. Key verified findings with evidence grades:
+
+- **Sleep:** consistency over the whole term predicts grades (~25% of variance); the
+  night-before shows no rescue effect (Okano et al. 2019, correlational:
+  https://www.nature.com/articles/s41539-019-0055-z). One night's deprivation cuts new
+  memory formation ~40% (Yoo/Walker 2007, experimental:
+  https://pubmed.ncbi.nlm.nih.gov/17293859/). Caffeine ≥6h before bed cuts sleep >1h
+  (Drake 2013 RCT: https://jcsm.aasm.org/doi/full/10.5664/jcsm.3170). Retrieval practice
+  protects memory against acute stress (Smith et al. 2016, Science RCT:
+  https://www.science.org/doi/10.1126/science.aah5067).
+- **Tutoring:** step-based tutoring ≈ human tutoring (d ≈ 0.76 vs 0.79, VanLehn 2011:
+  https://www.tandfonline.com/doi/abs/10.1080/00461520.2011.611369); worked examples for
+  stuck novices (Sweller & Cooper), fading with expertise (Kalyuga expertise reversal),
+  graduated hints point→teach→bottom-out (VanLehn 2006), feedback doubles retention of
+  low-confidence correct answers (Butler et al. 2008:
+  https://pubmed.ncbi.nlm.nih.gov/18605878/), high-confidence errors are most correctable
+  but resurface in ~a week without re-testing (Butterfield & Metcalfe; hypercorrection).
+- **Test-day:** answer changes are wrong→right 51% vs right→wrong 25% across 1,561 exams
+  (Kruger, Wirtz & Miller 2005: https://pubmed.ncbi.nlm.nih.gov/15898871/; 33 prior
+  studies agree) — change with a reason. Calculation errors run 1–5% per step with <50%
+  self-detection by re-reading (Panko: http://panko.shidler.hawaii.edu/HumanErr/Basic.htm)
+  → estimate-first + re-derive + sanity gauntlet. Choking is working-memory capture;
+  overlearning + pressure practice prevents it (Beilock & Carr 2005:
+  https://pubmed.ncbi.nlm.nih.gov/15686575/). Cyclic sighing for rapid arousal reduction
+  (Stanford RCT) and anxiety-as-excitement reappraisal (Brooks 2014:
+  https://pubmed.ncbi.nlm.nih.gov/24364682/). Expressive writing: original Science RCTs
+  positive, replications failed — flagged mixed.
+- **Math readiness:** basic-skills quiz predicts stats grades; calculus doesn't (Johnson
+  & Kuennen 2006: https://jse.amstat.org/v14n2/johnson.html; replicated Lunsford & Poplin
+  2011 n=760: https://jse.amstat.org/v19n1/lunsford.pdf). 38% of stats students failed
+  1/2 ÷ 2/3. CUNY RCT: algebra-placement failers PASSED college stats at 56% with weekly
+  support vs 39% in remedial algebra, and graduated more (Logue et al. 2016/2019:
+  https://journals.sagepub.com/doi/10.3102/0162373719848777). 15-item diagnostic in
+  performance-protocol.md.
+- **Environment:** phone-break depletion (Kang & Kurtzberg 2019:
+  https://akjournals.com/view/journals/2006/8/3/article-p395.xml), notifications disrupt
+  even unchecked (Stothart 2015), students self-interrupt in <6 min with devices present
+  (Rosen 2013); lyrical music impairs memory work regardless of preference (Perham);
+  Pomodoro's 25/5 is folklore — self-regulated breaks matched or beat it (Biwer 2023);
+  wakeful rest after learning aids retention 7 days out (Dewar 2012); paper-first
+  justified by screen-reading penalty meta-analyses + working-memory offloading (the
+  Mueller-Oppenheimer handwriting study itself didn't replicate — flagged).
+
 ## 7. Open items (to resolve after July 1, 2026)
 
 1. Pull the real section syllabus: grade breakdown, exam count/dates, proctoring rules,

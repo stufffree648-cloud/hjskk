@@ -783,7 +783,7 @@ computations below verified with Python.
 - C) z-interval with σ known
 - D) chi-square goodness-of-fit
 
-**Answer: A.**
+**Answer: A.** Estimating a MEAN with σ unknown → t-interval, df = 39.
 
 **DR-2.** Which symbol is a statistic? 
 - A) σ
@@ -799,7 +799,7 @@ computations below verified with Python.
 - C) convenience sampling
 - D) systematic sampling
 
-**Answer: D.**
+**Answer: D.** Selecting every kth item is systematic sampling.
 
 **DR-4.** Ana scored 84 on test 1 (mean 76, SD 4) and 88 on test 2 (mean 82, SD 6). Her relatively better performance was:
 - A) test 2 — the higher raw score
@@ -847,7 +847,7 @@ computations below verified with Python.
 - C) the parameter has a 95% probability of being inside this specific interval
 - D) 95% of sample means from future studies will land inside it
 
-**Answer: A.**
+**Answer: A.** The 95% describes the method’s long-run capture rate — not this one interval, not the data, not future sample means.
 
 **DR-10.** n = 16, x̄ = 50, s = 8, t* = 2.131. The 95% CI for μ:
 - A) (46.08, 53.92)
@@ -863,7 +863,7 @@ computations below verified with Python.
 - C) p > 0.60
 - D) p ≥ 0.60
 
-**Answer: C.**
+**Answer: C.** “More than” → right-tailed alternative, stated about the parameter p.
 
 **DR-12.** That test gives p-value = 0.0668 at α = 0.05. Conclusion:
 - A) reject H₀ — there is sufficient evidence for the claim
@@ -871,7 +871,7 @@ computations below verified with Python.
 - C) accept H₀ — exactly 60% recommend
 - D) lower α until the result is significant
 
-**Answer: B.**
+**Answer: B.** p-value 0.0668 > α = 0.05 → insufficient evidence for the claim; and we never “accept” H₀.
 
 **DR-13.** H₀: the alarm system has no effect on break-ins. A Type I error means:
 - A) failing to adopt a system that works
@@ -887,7 +887,7 @@ computations below verified with Python.
 - C) 56.7
 - D) 7,200
 
-**Answer: A.**
+**Answer: A.** E = (row total)(column total)/(grand total) = 80 × 90/300 = 24.
 
 **DR-15.** Same 12 athletes timed before and after a training program. Compare means with:
 - A) two-sample independent t-test
@@ -895,7 +895,7 @@ computations below verified with Python.
 - C) two-proportion z-test
 - D) chi-square test
 
-**Answer: B.**
+**Answer: B.** Same subjects measured twice → dependent samples → paired t-test on the differences.
 
 **DR-16.** ŷ = 54 − 1.4x (score from TV hours). The −1.4 means:
 - A) scores drop exactly 1.4 points per hour for every student
@@ -903,7 +903,7 @@ computations below verified with Python.
 - C) each extra TV hour predicts a score about 1.4 points lower, on average
 - D) 1.4% of scores are explained by TV
 
-**Answer: C.**
+**Answer: C.** Slope interpretation must use predicted/average language — never deterministic (B-style) or causal (observational data).
 
 **DR-17.** r = −0.7. The proportion of variation in y explained by x is:
 - A) 0.70
@@ -911,7 +911,7 @@ computations below verified with Python.
 - C) −0.49
 - D) 0.49
 
-**Answer: D.**
+**Answer: D.** r² = (−0.7)² = 0.49 — the sign disappears when squaring; r² can never be negative.
 
 **DR-18.** Which study design would justify the headline "New app CAUSES better sleep"?
 - A) a randomized experiment assigning users to app vs no-app and comparing sleep
@@ -919,7 +919,7 @@ computations below verified with Python.
 - C) a strong correlation between app downloads and sleep scores
 - D) expert testimony from the app's developers
 
-**Answer: A.**
+**Answer: A.** Only random assignment justifies causal language; sample size and correlation strength cannot.
 
 **DR-19.** The quantity σ/√n describes the variability of:
 - A) individual observations

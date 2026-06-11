@@ -3,6 +3,23 @@
 Goal: **100% in 26SU7W Statistics (MAT-124-56143)** — County College of Morris,
 July 1 – August 18, 2026, Prof. Deanne Stigliano.
 
+## 🎮 THE GAME — play it now
+
+**`game/index.html` is a real, playable quiz RPG** — open it in any browser
+(double-click the file, or `cd game && python3 -m http.server` and visit
+localhost:8000). To put it online: GitHub → Settings → Pages → deploy from this
+branch → then visit `https://<you>.github.io/hjskk/mat-124-statistics/game/`.
+
+What's in it: all **208 verified questions** · XP & 8 ranks (Data Rookie →
+Statistician Supreme) · **10 animated boss battles** (The Biased Pollster → The
+Final Exam Dragon) with HP bars, unlocked by unit mastery · streaks with 2
+monthly freezes & fresh-start protection · 3 daily quests + bonus chest ·
+surprise loot drops (stats facts + TI-84 cheat codes) · spaced repetition built
+in (misses come back same-session, +1 day, +3 days, +7 days; 12/day cap so the
+backlog never crushes) · shuffled answer letters every time · confidence
+buttons ("sure"/"not sure" — unsure answers get re-tested) · sound effects &
+confetti. Progress saves in your browser (localStorage).
+
 ## Files
 
 | File | What it is |

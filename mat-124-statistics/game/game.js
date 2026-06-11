@@ -208,6 +208,7 @@ const BADGES = [
   { id: "palace", icon: "🏛️", name: "Memory Palace", desc: "Master 50 questions", check: () => masteredCount() >= 50 },
   { id: "quest", icon: "📜", name: "Questmaster", desc: "Clear all 3 daily quests", check: s => s.quests.length === 3 && s.quests.every(q => q.done) },
   { id: "daily7", icon: "👑", name: "Daily Devotee", desc: "Complete 7 Daily Challenges", check: s => (s.counters.dailies || 0) >= 7 },
+  { id: "ace", icon: "🎓", name: "Simulation Ace", desc: "Score 18+/20 in the Exam Simulator", check: s => (s.counters.examBest || 0) >= 18 },
 ];
 function awardBadges() {
   for (const b of BADGES) {
@@ -646,9 +647,12 @@ const FORGE = [
   },
 ];
 
-function forgeQuestion() {
-  for (let tries = 0; tries < 6; tries++) {
-    const gen = pk(FORGE);
+FORGE.forEach(g => { try { g.unitTag = g().unit; } catch (e) { g.unitTag = 0; } });
+
+function forgeQuestion(units) {
+  const pool = units ? FORGE.filter(g => units.includes(g.unitTag)) : FORGE;
+  for (let tries = 0; tries < 8; tries++) {
+    const gen = pk(pool.length ? pool : FORGE);
     const q = gen();
     if (new Set(q.options).size === 4) {
       q.id = "F-" + gen.name; q.forge = true; q.kind = "forge";
@@ -657,17 +661,39 @@ function forgeQuestion() {
   }
   return null;
 }
-function startForge() {
+function startForge(units) {
   touchStreak(); ensureQuests();
   const queue = [];
-  while (queue.length < 10) {
-    const q = forgeQuestion();
+  let guard = 0;
+  while (queue.length < 10 && guard++ < 60) {
+    const q = forgeQuestion(units);
     if (q) queue.push({ id: q.id, review: false, q });
   }
   session = { queue, i: 0, mode: "forge", picked: null, answered: false, stats: { right: 0, wrong: 0, xp: 0 } };
   $("quizTitle").textContent = "🔨 THE FORGE";
   $("bossBar").classList.add("hidden");
   showView("quiz"); renderQuestion();
+}
+
+/* ---------------- EXAM SIMULATOR: silent scoring, review at the end ---------------- */
+function startExam() {
+  touchStreak(); ensureQuests();
+  const pool = [...BANK];
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  session = {
+    queue: pool.slice(0, 20).map(q => ({ id: q.id, review: false })), i: 0, mode: "exam",
+    picked: null, answered: false, startMs: Date.now(), examLog: [],
+    stats: { right: 0, wrong: 0, xp: 0 },
+  };
+  $("quizTitle").textContent = "🎓 EXAM SIMULATOR";
+  $("bossBar").classList.add("hidden");
+  showView("quiz"); renderQuestion();
+  modal(`
+    <div class="big-emoji">🎓</div>
+    <h2>Exam Simulator</h2>
+    <p>20 mixed questions. <b>No feedback until the end</b> — answers lock silently and the next question appears, exactly like the real thing. Full review of every miss when you finish.</p>
+    <p>No visible clock while you work (calmer = better, per the choking research); your time shows at the end. <b>18+/20 = Simulation Ace 🎓</b></p>
+    <button class="big-btn primary" onclick="closeModal()">Begin exam ➜</button>`);
 }
 
 /* ---------------- the Black Book (error log) ---------------- */
@@ -812,6 +838,15 @@ function lockIn(sure) {
   const q = item.q || byId(item.id);
   const correctPos = optOrder.indexOf(q.answer);
   const isRight = session.picked === correctPos;
+
+  if (session.mode === "exam") {
+    // silent: no styling, no sounds, no XP floats — nothing that leaks correctness
+    session.examLog.push({ q, sure, isRight });
+    if (session.i + 1 >= session.queue.length) endSession();
+    else { session.i++; renderQuestion(); }
+    return;
+  }
+
   const opts = document.querySelectorAll(".opt");
   opts.forEach(o => (o.disabled = true));
   opts[correctPos].classList.add("correct");
@@ -933,6 +968,35 @@ function endSession(early) {
       <h2>Readiness Report</h2>
       ${body}
       <button class="big-btn primary" onclick="closeModal(); showView('home'); renderHome();">To the map ➜</button>`);
+    return;
+  }
+
+  if (session.mode === "exam") {
+    const log = session.examLog || [];
+    const right = log.filter(e => e.isRight).length;
+    const ms = Date.now() - session.startMs;
+    const mm = Math.floor(ms / 60000), ss = String(Math.floor(ms / 1000) % 60).padStart(2, "0");
+    let xp = 0;
+    for (const e of log) { const res = recordAnswer(e.q, e.isRight, e.sure, false); xp += res.xp; logHistory(e.isRight, res.xp); }
+    S.counters.examBest = Math.max(S.counters.examBest || 0, right);
+    save(); awardBadges();
+    const ace = right >= 18;
+    if (ace) { confetti(200); sfx("level"); }
+    const misses = log.filter(e => !e.isRight);
+    const rows = misses.map(e => `<p style="text-align:left;margin-bottom:10px"><b>${e.q.id}</b> — ${strip(e.q.stem, 90)}…<br>
+      <span style="color:var(--green)">✔ ${strip(e.q.options[e.q.answer], 70)}</span><br>
+      <span style="color:var(--dim);font-size:12px">${strip(e.q.expl, 150)}…</span></p>`).join("");
+    modal(`
+      <div class="big-emoji">${ace ? "🎓" : "📝"}</div>
+      <h2>${ace ? "SIMULATION ACE!" : "Exam complete"}</h2>
+      <div class="modal-stats">
+        <div>${right}/20<span>score</span></div>
+        <div>${mm}:${ss}<span>time</span></div>
+        <div>+${xp}<span>XP</span></div>
+      </div>
+      <p>${ace ? "18+ under silent test conditions — that's a 90%+ performance with no safety net. You're ready to scale this up." : "Every miss below is now in your review deck and the Black Book. Study them, then run it back."}</p>
+      ${misses.length ? `<div style="max-height:32vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:10px">${rows}</div>` : ""}
+      <button class="big-btn primary" onclick="closeModal(); showView('home'); renderHome();">Back to the map ➜</button>`);
     return;
   }
 
@@ -1124,13 +1188,32 @@ function renderHome() {
   forge.innerHTML = `
     <div class="u-name" style="color:#ffd9a0">🔨 THE FORGE</div>
     <div class="u-sub" style="color:#c9a36a">infinite questions, freshly-forged numbers every time — exactly how MyLab generates your real tests</div>
-    <div class="u-btns"><button class="u-btn" data-forge="1" style="border-color:#8a5a20;color:#ffd9a0">⚒️ FORGE 10</button></div>`;
+    <div class="u-btns">
+      <button class="u-btn" data-forge="all" style="border-color:#8a5a20;color:#ffd9a0">⚒️ ALL</button>
+      <button class="u-btn" data-forge="45" style="border-color:#8a5a20;color:#ffd9a0">Binomial+Normal</button>
+      <button class="u-btn" data-forge="67" style="border-color:#8a5a20;color:#ffd9a0">CI+Tests</button>
+      <button class="u-btn" data-forge="89" style="border-color:#8a5a20;color:#ffd9a0">χ²+Regression</button>
+    </div>`;
   grid.appendChild(forge);
 
+  const exam = document.createElement("div");
+  exam.className = "unit-card";
+  exam.style.gridColumn = "1 / -1";
+  exam.style.background = "linear-gradient(135deg, #16324a, #0c1d2c)";
+  exam.style.borderColor = "#2f6f9f";
+  const best = S.counters.examBest || 0;
+  exam.innerHTML = `
+    <div class="u-name" style="color:#bfe0ff">🎓 EXAM SIMULATOR</div>
+    <div class="u-sub" style="color:#8fb8d8">20 mixed questions · NO feedback until the end · full miss review after${best ? ` · best: ${best}/20` : ""}</div>
+    <div class="u-btns"><button class="u-btn" id="examBtn" style="border-color:#2f6f9f;color:#bfe0ff">📝 SIT THE EXAM</button></div>`;
+  grid.appendChild(exam);
+  exam.querySelector("#examBtn").onclick = startExam;
+
+  const FORGE_SETS = { "45": [4, 5], "67": [6, 7], "89": [8, 9] };
   grid.querySelectorAll("[data-train]").forEach(b => (b.onclick = () => startPractice(+b.dataset.train)));
   grid.querySelectorAll("[data-boss]").forEach(b => (b.onclick = () => startBoss(+b.dataset.boss)));
   grid.querySelectorAll("[data-scroll]").forEach(b => (b.onclick = () => showScroll(+b.dataset.scroll)));
-  grid.querySelectorAll("[data-forge]").forEach(b => (b.onclick = startForge));
+  grid.querySelectorAll("[data-forge]").forEach(b => (b.onclick = () => startForge(FORGE_SETS[b.dataset.forge] || null)));
 
   // summer heatmap: every day from "now-ish" through the final
   const heat = $("heatGrid"); heat.innerHTML = "";
@@ -1154,7 +1237,9 @@ function renderHome() {
   for (let i = 0; i < 7; i++) { const h = S.history[addDays(today, -i)]; if (h) week += h.a; }
   const tmrw = addDays(today, 1);
   const dueTomorrow = Object.values(S.perQ).filter(st => st.due && st.due <= tmrw && st.due > today).length;
-  $("climbStats").textContent = `today: ${t.a} answered (+${t.xp} XP) · last 7 days: ${week} · tomorrow: ${dueTomorrow} review${dueTomorrow === 1 ? "" : "s"} due · paint a square green every day and the Dragon falls`;
+  const dCourse = dayDiff(today, "2026-07-01"), dFinal = dayDiff(today, "2026-08-18");
+  const countdown = `${dCourse > 0 ? `📚 course in ${dCourse}d` : "📚 course LIVE"} · ${dFinal > 0 ? `🐉 final in ${dFinal}d` : "🐉 FINAL WEEK"}`;
+  $("climbStats").textContent = `${countdown} · today: ${t.a} answered (+${t.xp} XP) · last 7 days: ${week} · tomorrow: ${dueTomorrow} review${dueTomorrow === 1 ? "" : "s"} due`;
 
   const bg = $("badgeGrid"); bg.innerHTML = "";
   for (const b of BADGES) {

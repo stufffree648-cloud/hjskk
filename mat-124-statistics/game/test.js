@@ -89,7 +89,7 @@ let gsrc = fs.readFileSync("game.js", "utf8").replace('"use strict";', "");
 let T;
 eval(qsrc + "\n" + gsrc + `
 ; T = { startPractice, startBoss, startDaily, startQuickFive, startBookDrill, startDiag, startGauntlet,
-  startForge, forgeQuestion, ncdf,
+  startForge, forgeQuestion, ncdf, startExam,
   lockIn, nextQuestion, renderHome, touchStreak, recordAnswer, dueReviews, byId, bookEntries,
   getS: () => S, getSession: () => session, getOptOrder: () => optOrder, levelFor, unitPower, masteredCount };
 `);
@@ -207,6 +207,19 @@ check("forge queue is 10", T.getSession().queue.length === 10);
 finishSession(true);
 check("forge XP awarded", T.getS().xp > xpBeforeForge);
 check("forge summary modal", ids.modalCard._html.includes("Session complete"));
+
+console.log("EXAM SIMULATOR — silent run, review at end");
+let unitForge = true;
+for (let i = 0; i < 60; i++) { const q = T.forgeQuestion([6, 7]); if (!q || ![6, 7].includes(q.unit)) { unitForge = false; break; } }
+check("unit-targeted forge respects filter", unitForge);
+T.startExam();
+check("exam queue is 20", T.getSession().queue.length === 20);
+let g2 = 0;
+while (T.getSession().examLog.length < 20 && g2++ < 25) answer(true);
+check("exam logged 20 silent answers", T.getSession().examLog.length === 20);
+check("exam end modal with score", ids.modalCard._html.includes("20/20") || ids.modalCard._html.includes("SIMULATION"));
+check("Simulation Ace badge", !!T.getS().badges.ace);
+check("exam best recorded", (T.getS().counters.examBest || 0) === 20);
 
 console.log("EARN-BACK — broken chain restored by clearing reviews");
 S1 = T.getS();

@@ -546,6 +546,130 @@ function startDaily() {
     <button class="big-btn primary" onclick="closeModal()">Take it on ➜</button>`);
 }
 
+/* ---------------- THE FORGE: infinite algorithmic questions ---------------- */
+function ncdf(z) { // Zelen & Severo normal CDF approximation (~1e-7)
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989423 * Math.exp(-z * z / 2);
+  const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  return z > 0 ? 1 - p : p;
+}
+function comb(n, k) { let r = 1; for (let i = 1; i <= k; i++) r = r * (n - i + 1) / i; return Math.round(r); }
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pk = arr => arr[Math.floor(Math.random() * arr.length)];
+const r2 = x => (+x).toFixed(2), r4 = x => (+x).toFixed(4), r1 = x => (+x).toFixed(1);
+
+const FORGE = [
+  function zscore() {
+    const mu = ri(8, 24) * 5, sg = pk([4, 5, 6, 8, 10, 12]), k = pk([0.5, 1, 1.25, 1.5, 2, 2.5]) * pk([1, -1]);
+    const x = mu + k * sg;
+    return { unit: 5, stem: `<p>Scores have mean ${mu} and SD ${sg}. The z-score for a value of ${r1(x)} is:</p>`,
+      options: [r2(k), r2(-k), r2(x - mu), r2(k / 2)], answer: 0,
+      expl: `z = (x − μ)/σ = (${r1(x)} − ${mu})/${sg} = ${r2(k)}. (Sign flips and "forgot to divide by σ" are the classic slips.)` };
+  },
+  function normprob() {
+    const mu = ri(10, 25) * 5, sg = pk([5, 8, 10, 12, 15]), z = pk([0.5, 0.75, 1, 1.25, 1.5, 2]);
+    const x = mu + z * sg, ans = 1 - ncdf(z);
+    return { unit: 5, stem: `<p>X ~ N(${mu}, ${sg}). P(X &gt; ${r1(x)}) = ?</p>`,
+      options: [r4(ans), r4(ncdf(z)), r4(ncdf(z) - 0.5), r4(1 - ncdf(2 * z))], answer: 0,
+      expl: `z = (${r1(x)} − ${mu})/${sg} = ${r2(z)} → P = 1 − Φ(${r2(z)}) = ${r4(ans)}. TI-84: normalcdf(${r1(x)},1E99,${mu},${sg}). (The runner-up answer is the LEFT-tail area — read the direction.)` };
+  },
+  function invnorm() {
+    const mu = ri(10, 25) * 5, sg = pk([5, 8, 10, 12]);
+    const [p, z] = pk([[0.90, 1.2816], [0.95, 1.6449], [0.75, 0.6745], [0.10, -1.2816], [0.25, -0.6745]]);
+    return { unit: 5, stem: `<p>X ~ N(${mu}, ${sg}). The ${Math.round(p * 100)}th percentile of X is:</p>`,
+      options: [r1(mu + z * sg), r1(mu - z * sg), r1(mu + p * sg), r1(mu + z / 2 * sg)], answer: 0,
+      expl: `z for the ${Math.round(p * 100)}th percentile ≈ ${z}; x = μ + zσ = ${mu} + (${z})(${sg}) = ${r1(mu + z * sg)}. TI-84: invNorm(${p},${mu},${sg}).` };
+  },
+  function binom() {
+    const n = ri(8, 14), p = pk([0.2, 0.25, 0.3, 0.4]), k = Math.max(1, Math.round(n * p));
+    const f = (kk) => comb(n, kk) * p ** kk * (1 - p) ** (n - kk);
+    return { unit: 4, stem: `<p>X ~ binomial, n = ${n}, p = ${p}. P(X = ${k}) = ?</p>`,
+      options: [r4(f(k)), r4(p ** k * (1 - p) ** (n - k)), r4(f(k + 1)), r4(comb(n, k) * (1 - p) ** k * p ** (n - k))], answer: 0,
+      expl: `${n}C${k} · ${p}^${k} · ${1 - p}^${n - k} = ${r4(f(k))}. TI-84: binompdf(${n},${p},${k}). (Forgetting the ${n}C${k} factor is the #1 slip.)` };
+  },
+  function binomsd() {
+    const n = ri(4, 12) * 5, p = pk([0.2, 0.25, 0.3, 0.4, 0.5]);
+    const v = n * p * (1 - p);
+    return { unit: 4, stem: `<p>X ~ binomial, n = ${n}, p = ${p}. The standard deviation of X is:</p>`,
+      options: [r2(Math.sqrt(v)), r2(v), r2(Math.sqrt(n * p)), r2(n * p)], answer: 0,
+      expl: `σ = √(npq) = √(${n}·${p}·${1 - p}) = √${r2(v)} = ${r2(Math.sqrt(v))}. (npq without the root is the variance; np is the mean.)` };
+  },
+  function clt() {
+    const [sg, n, se] = pk([[10, 25, 2], [15, 36, 2.5], [12, 36, 2], [20, 100, 2], [8, 64, 1], [15, 25, 3]]);
+    const mu = ri(12, 28) * 5, z = pk([1, 1.25, 1.5, 2]), m = mu + z * se;
+    const ans = 1 - ncdf(z), zw = z * se / sg;
+    return { unit: 5, stem: `<p>A population has μ = ${mu}, σ = ${sg}. For random samples of n = ${n}, P(x̄ &gt; ${r1(m)}) = ?</p>`,
+      options: [r4(ans), r4(1 - ncdf(zw)), r4(ncdf(z)), r4(ncdf(z) - 0.5)], answer: 0,
+      expl: `SE = ${sg}/√${n} = ${se}; z = (${r1(m)} − ${mu})/${se} = ${r2(z)} → P = ${r4(ans)}. The runner-up uses σ instead of σ/√n — THE classic exam trap.` };
+  },
+  function tci() {
+    const [n, t] = pk([[9, 2.306], [16, 2.131], [25, 2.064], [36, 2.030]]);
+    const xb = ri(40, 90), s = pk([6, 8, 9, 12]), se = s / Math.sqrt(n), me = t * se;
+    const iv = (m) => `(${r2(xb - m)}, ${r2(xb + m)})`;
+    return { unit: 6, stem: `<p>n = ${n}, x̄ = ${xb}, s = ${s}. Using t* = ${t}, the 95% CI for μ is:</p>`,
+      options: [iv(me), iv(1.96 * se), iv(t * s), iv(t * s / n)], answer: 0,
+      expl: `SE = ${s}/√${n} = ${r2(se)}; ME = ${t} × ${r2(se)} = ${r2(me)} → ${iv(me)}. (Option two used z* = 1.96; option three forgot √n.)` };
+  },
+  function propz() {
+    const p0 = pk([0.3, 0.4, 0.5, 0.6]), n = pk([100, 225, 400]);
+    const se = Math.sqrt(p0 * (1 - p0) / n), z = pk([1, 1.5, 2, 2.5]);
+    const ph = +(p0 + z * se).toFixed(3), zr = (ph - p0) / se;
+    return { unit: 7, stem: `<p>Test H₀: p = ${p0} with p̂ = ${ph} and n = ${n}. The test statistic is:</p>`,
+      options: [r2(zr), r2(ph - p0), r2(-zr), r2(2 * zr)], answer: 0,
+      expl: `SE = √(${p0}·${1 - p0}/${n}) = ${r4(se)}; z = (${ph} − ${p0})/${r4(se)} = ${r2(zr)}. TI-84: 1-PropZTest. (The raw difference ${r2(ph - p0)} isn't a test statistic until you divide by SE.)` };
+  },
+  function expcount() {
+    const r = pk([40, 50, 60, 80]), c = pk([30, 60, 90, 120]), T = pk([200, 300, 400]);
+    const e = r * c / T;
+    return { unit: 8, stem: `<p>In a chi-square test of independence, a cell's row total is ${r}, column total ${c}, grand total ${T}. Its expected count is:</p>`,
+      options: [r1(e), r1((r + c) / 2), r1(r * c / (r + c)), r1(Math.abs(r - c) || 5)], answer: 0,
+      expl: `E = (row)(column)/grand = ${r}·${c}/${T} = ${r1(e)}.` };
+  },
+  function predict() {
+    const a = ri(2, 30), b = pk([1.5, 2, 2.5, 3, -1.5, -2]), x = ri(4, 15);
+    return { unit: 9, stem: `<p>The regression line is ŷ = ${a} ${b < 0 ? "−" : "+"} ${Math.abs(b)}x. The predicted y at x = ${x} is:</p>`,
+      options: [r1(a + b * x), r1((a + b) * x), r1(a + b + x), r1(b * x)], answer: 0,
+      expl: `ŷ = ${a} + (${b})(${x}) = ${r1(a + b * x)}. (Last option forgot the intercept.)` };
+  },
+  function residual() {
+    const y = ri(20, 80), off = pk([2, 3, 4.5, 6]) * pk([1, -1]), yh = +(y - off).toFixed(1);
+    return { unit: 9, stem: `<p>A point has observed y = ${y}; the line predicts ŷ = ${yh}. The residual is:</p>`,
+      options: [r1(off), r1(-off), r1(y + yh), r2(y / yh)], answer: 0,
+      expl: `Residual = y − ŷ = ${y} − ${yh} = ${r1(off)} — ${off > 0 ? "the point sits ABOVE the line" : "the point sits BELOW the line"}. (Reversing the subtraction flips the sign.)` };
+  },
+  function rsq() {
+    const r = pk([0.5, 0.6, 0.7, 0.8, 0.9]) * pk([1, -1]);
+    const pct = v => `${Math.round(v * 100)}%`;
+    return { unit: 9, stem: `<p>The correlation between x and y is r = ${r}. The percent of variation in y explained by the linear relationship is:</p>`,
+      options: [pct(r * r), pct(Math.abs(r)), pct(1 - r * r), pct(Math.abs(r) / 2)], answer: 0,
+      expl: `r² = (${r})² = ${(r * r).toFixed(2)} → ${pct(r * r)}. (Reading r itself as the percent is the #1 regression error.)` };
+  },
+];
+
+function forgeQuestion() {
+  for (let tries = 0; tries < 6; tries++) {
+    const gen = pk(FORGE);
+    const q = gen();
+    if (new Set(q.options).size === 4) {
+      q.id = "F-" + gen.name; q.forge = true; q.kind = "forge";
+      return q;
+    }
+  }
+  return null;
+}
+function startForge() {
+  touchStreak(); ensureQuests();
+  const queue = [];
+  while (queue.length < 10) {
+    const q = forgeQuestion();
+    if (q) queue.push({ id: q.id, review: false, q });
+  }
+  session = { queue, i: 0, mode: "forge", picked: null, answered: false, stats: { right: 0, wrong: 0, xp: 0 } };
+  $("quizTitle").textContent = "🔨 THE FORGE";
+  $("bossBar").classList.add("hidden");
+  showView("quiz"); renderQuestion();
+}
+
 /* ---------------- the Black Book (error log) ---------------- */
 function bookEntries() {
   return Object.entries(S.perQ)
@@ -650,7 +774,7 @@ let optOrder = [];
 function renderQuestion() {
   updateComboChip();
   const item = session.queue[session.i];
-  const q = byId(item.id);
+  const q = item.q || byId(item.id);
   session.picked = null; session.answered = false;
   $("progFill").style.width = (session.i / session.queue.length * 100) + "%";
   $("qStreakNum").textContent = S.streak;
@@ -685,7 +809,7 @@ function lockIn(sure) {
   session.answered = true;
   $("lockRow").classList.add("hidden");
   const item = session.queue[session.i];
-  const q = byId(item.id);
+  const q = item.q || byId(item.id);
   const correctPos = optOrder.indexOf(q.answer);
   const isRight = session.picked === correctPos;
   const opts = document.querySelectorAll(".opt");
@@ -986,15 +1110,27 @@ function renderHome() {
       <div class="u-sub">${isDragon ? "20 cumulative questions · clear at 18 · the dress rehearsal for 100%" : UNITS[u].sub + " · " + boss.name + " · " + mcount + "/" + qs.length + " mastered"}</div>
       ${isDragon ? "" : `<div class="power-bar"><div class="power-fill" style="width:${Math.round(p * 100)}%"></div></div>`}
       <div class="u-btns">
-        ${isDragon ? "" : `<button class="u-btn" data-train="${u}">Train (${Math.round(p * 100)}%)</button>`}
+        ${isDragon ? `<button class="u-btn" data-train="10">🎰 Train Roulette (${Math.round(unitPower(10) * 100)}%)</button>` : `<button class="u-btn" data-train="${u}">Train (${Math.round(p * 100)}%)</button>`}
         ${isDragon || !SCROLLS[u] ? "" : `<button class="u-btn scroll" data-scroll="${u}" ${p >= 0.5 || cleared ? "" : "disabled"} title="${p >= 0.5 || cleared ? SCROLLS[u].name : "Formula scroll — unlocks at 50% power"}">${p >= 0.5 || cleared ? "📜" : "🔒"}</button>`}
         <button class="${bossClass}" data-boss="${u}" ${unlocked ? "" : "disabled"}>${bossLabel}</button>
       </div>`;
     grid.appendChild(card);
   }
+  const forge = document.createElement("div");
+  forge.className = "unit-card";
+  forge.style.gridColumn = "1 / -1";
+  forge.style.background = "linear-gradient(135deg, #3a2410, #1c1206)";
+  forge.style.borderColor = "#8a5a20";
+  forge.innerHTML = `
+    <div class="u-name" style="color:#ffd9a0">🔨 THE FORGE</div>
+    <div class="u-sub" style="color:#c9a36a">infinite questions, freshly-forged numbers every time — exactly how MyLab generates your real tests</div>
+    <div class="u-btns"><button class="u-btn" data-forge="1" style="border-color:#8a5a20;color:#ffd9a0">⚒️ FORGE 10</button></div>`;
+  grid.appendChild(forge);
+
   grid.querySelectorAll("[data-train]").forEach(b => (b.onclick = () => startPractice(+b.dataset.train)));
   grid.querySelectorAll("[data-boss]").forEach(b => (b.onclick = () => startBoss(+b.dataset.boss)));
   grid.querySelectorAll("[data-scroll]").forEach(b => (b.onclick = () => showScroll(+b.dataset.scroll)));
+  grid.querySelectorAll("[data-forge]").forEach(b => (b.onclick = startForge));
 
   // summer heatmap: every day from "now-ish" through the final
   const heat = $("heatGrid"); heat.innerHTML = "";

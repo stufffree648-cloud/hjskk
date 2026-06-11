@@ -89,6 +89,7 @@ let gsrc = fs.readFileSync("game.js", "utf8").replace('"use strict";', "");
 let T;
 eval(qsrc + "\n" + gsrc + `
 ; T = { startPractice, startBoss, startDaily, startQuickFive, startBookDrill, startDiag, startGauntlet,
+  startForge, forgeQuestion, ncdf,
   lockIn, nextQuestion, renderHome, touchStreak, recordAnswer, dueReviews, byId, bookEntries,
   getS: () => S, getSession: () => session, getOptOrder: () => optOrder, levelFor, unitPower, masteredCount };
 `);
@@ -102,7 +103,7 @@ function check(name, cond) {
 function answer(correct, sure = true) {
   const sess = T.getSession();
   const item = sess.queue[sess.i];
-  const q = T.byId(item.id);
+  const q = item.q || T.byId(item.id);
   const correctPos = T.getOptOrder().indexOf(q.answer);
   const pos = correct ? correctPos : (correctPos + 1) % 4;
   ids.qOptions.children[pos].click();          // pick
@@ -190,6 +191,22 @@ T.startGauntlet();
 check("gauntlet queue built", T.getSession().queue.length === 8);
 finishSession(true);
 check("gauntlet end modal", ids.modalCard._html.includes("Gauntlet") || ids.modalCard._html.includes("SPEED"));
+
+console.log("FORGE — infinite algorithmic questions");
+let forgeOk = true;
+for (let i = 0; i < 300; i++) {
+  const q = T.forgeQuestion();
+  if (!q || new Set(q.options).size !== 4 || q.answer !== 0 ||
+      q.options.some(o => /NaN|Infinity|undefined/.test(String(o)))) { forgeOk = false; console.log("    bad forge:", q && q.id, q && q.options); break; }
+}
+check("300 forged questions all valid (4 distinct options, no NaN)", forgeOk);
+check("normal CDF sane", Math.abs(T.ncdf(1.96) - 0.975) < 0.001 && Math.abs(T.ncdf(-2) - 0.0228) < 0.001);
+const xpBeforeForge = T.getS().xp;
+T.startForge();
+check("forge queue is 10", T.getSession().queue.length === 10);
+finishSession(true);
+check("forge XP awarded", T.getS().xp > xpBeforeForge);
+check("forge summary modal", ids.modalCard._html.includes("Session complete"));
 
 console.log("EARN-BACK — broken chain restored by clearing reviews");
 S1 = T.getS();

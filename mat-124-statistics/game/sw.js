@@ -1,5 +1,5 @@
 /* Climb 100 service worker — network-first with cache fallback (offline play) */
-const CACHE = "climb100-v1";
+const CACHE = "climb100-v2";
 const ASSETS = ["./", "./index.html", "./style.css", "./game.js", "./questions.js", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", (e) => {

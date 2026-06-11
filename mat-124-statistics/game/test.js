@@ -89,7 +89,7 @@ let gsrc = fs.readFileSync("game.js", "utf8").replace('"use strict";', "");
 let T;
 eval(qsrc + "\n" + gsrc + `
 ; T = { startPractice, startBoss, startDaily, startQuickFive, startBookDrill, startDiag, startGauntlet,
-  startForge, forgeQuestion, ncdf, startExam,
+  startForge, forgeQuestion, ncdf, startExam, showVideos,
   lockIn, nextQuestion, renderHome, touchStreak, recordAnswer, dueReviews, byId, bookEntries,
   getS: () => S, getSession: () => session, getOptOrder: () => optOrder, levelFor, unitPower, masteredCount };
 `);
@@ -261,6 +261,10 @@ check("import restores xp", T.getS().xp === JSON.parse(snapshot).xp);
 promptPayload = "not json";
 ids.importBtn.onclick();
 check("garbage import rejected without crash", T.getS().xp === JSON.parse(snapshot).xp);
+
+console.log("WATCH LIST");
+T.showVideos(5);
+check("video modal lists CLT resources", ids.modalCard._html.includes("jbstatistics") && ids.modalCard._html.includes("sullystats"));
 
 console.log("RENDER HOME — banners wired");
 T.renderHome();

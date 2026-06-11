@@ -829,11 +829,22 @@ function startBoss(unit) {
   touchStreak(); ensureQuests();
   const boss = BOSSES[String(unit)];
   if (!boss) return;
-  const qs = [...boss.questions];
+  let queue = boss.questions.map(q => ({ id: q.id, review: false }));
+  // rematch freshness: a cleared boss regenerates — half its arsenal is forged anew
+  if (S.bossCleared[unit] && unit !== 10 && FORGE.some(g => g.unitTag === unit)) {
+    const originals = [...queue].sort(() => Math.random() - 0.5).slice(0, 5);
+    const forged = [];
+    let guard = 0;
+    while (forged.length < 5 && guard++ < 30) {
+      const q = forgeQuestion([unit]);
+      if (q) forged.push({ id: q.id, review: false, q });
+    }
+    queue = [...originals, ...forged].sort(() => Math.random() - 0.5);
+  }
   session = {
-    queue: qs.map(q => ({ id: q.id, review: false })), i: 0, mode: "boss", unit,
+    queue, i: 0, mode: "boss", unit,
     picked: null, answered: false,
-    boss: { hp: qs.length, total: qs.length, score: 0, misses: [] },
+    boss: { hp: queue.length, total: queue.length, score: 0, misses: [] },
     stats: { right: 0, wrong: 0, xp: 0 },
   };
   $("quizTitle").textContent = `BOSS FIGHT`;
@@ -1166,6 +1177,15 @@ function endSession(early) {
   }
 }
 
+/* ---------------- the PLAY router: one tap, zero decisions ---------------- */
+function nextAction() {
+  if (!S.diagDone) return { label: "▶️ PLAY", sub: "→ Readiness Check · 15 questions · find your gaps", run: startDiag };
+  const due = dueReviews().length;
+  if (!S.daily || S.daily.date !== todayStr()) return { label: "▶️ PLAY", sub: `→ Daily Challenge · today's 10, one shot${due ? ` · then ${due} reviews` : ""}`, run: startDaily };
+  if (due) return { label: "▶️ PLAY", sub: `→ clear ${due} due review${due > 1 ? "s" : ""} (+15 XP each), then ${UNITS[weakestUnit()].name}`, run: () => startPractice(weakestUnit()) };
+  return { label: "▶️ PLAY", sub: `→ train your weakest unit: ${UNITS[weakestUnit()].name}`, run: () => startPractice(weakestUnit()) };
+}
+
 /* ---------------- home rendering ---------------- */
 function renderHome() {
   ensureQuests();
@@ -1187,6 +1207,11 @@ function renderHome() {
     ql.appendChild(div);
   }
   $("questBonus").textContent = S.quests.every(q => q.done) ? "— chest claimed 🎁" : "(+10 XP each · all 3 = +20 chest)";
+
+  const act = nextAction();
+  $("smartBtn").innerHTML = `${act.label}<small>${act.sub}</small>`;
+  $("smartBtn").onclick = act.run;
+  $("smartBtn").style.fontSize = "20px";
 
   const banner = $("diagBanner");
   if (!S.diagDone) {
@@ -1416,7 +1441,6 @@ window.startQuickFive = startQuickFive;
 window.startBookDrill = startBookDrill;
 document.addEventListener("DOMContentLoaded", () => {
   load(); ensureQuests(); applyTheme();
-  $("smartBtn").onclick = () => startPractice(weakestUnit());
   $("lockSure").onclick = () => lockIn(true);
   $("lockUnsure").onclick = () => lockIn(false);
   $("nextBtn").onclick = nextQuestion;

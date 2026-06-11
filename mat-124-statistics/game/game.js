@@ -34,6 +34,9 @@ const REVIEW_GAPS = [1, 3, 7];        // days until next due, by stage
 const DAILY_REVIEW_CAP = 12;          // anti-burnout: flatten the backlog
 const BOSS_UNLOCK_POWER = 0.8;
 const DRAGON_UNLOCK_CLEARS = 6;
+const GAUNTLET_UNLOCK = "2026-07-22"; // week-4 novelty refresh, per the research
+const GAUNTLET_SIZE = 8;
+const GAUNTLET_PAR_MS = 4 * 60 * 1000;
 
 const LOOT = [
   "🤯 The Literary Digest poll had 2.4 MILLION responses in 1936 — and still called the election completely wrong. Bias doesn't shrink with size.",
@@ -78,6 +81,7 @@ function freshState() {
     cliffhanger: null,
     diagDone: null,
     muted: false,
+    theme: null,           // null = follow system preference; else 'dark' | 'light'
   };
 }
 function load() {
@@ -348,6 +352,27 @@ function startDiag() {
     <button class="big-btn primary" onclick="closeModal()">Begin 🔍</button>`);
 }
 
+function startGauntlet() {
+  touchStreak(); ensureQuests();
+  const pool = [...BANK];
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  session = {
+    queue: pool.slice(0, GAUNTLET_SIZE).map(q => ({ id: q.id, review: false })), i: 0,
+    mode: "gauntlet", picked: null, answered: false,
+    startMs: Date.now(),
+    stats: { right: 0, wrong: 0, xp: 0 },
+  };
+  $("quizTitle").textContent = "🌀 GAUNTLET";
+  $("bossBar").classList.add("hidden");
+  showView("quiz"); renderQuestion();
+  modal(`
+    <div class="big-emoji">🌀</div>
+    <h2>GAUNTLET MODE</h2>
+    <p>${GAUNTLET_SIZE} random questions from anywhere in the course, back to back. The clock counts up.</p>
+    <p><b>Clear at 7/${GAUNTLET_SIZE} (+25 XP). Beat ${Math.round(GAUNTLET_PAR_MS / 60000)}:00 par while clearing → SPEED DEMON +15.</b> Keyboard: 1–4 to answer, Enter to lock in.</p>
+    <button class="big-btn primary" onclick="closeModal()">RUN IT ⚡</button>`);
+}
+
 function startBoss(unit) {
   touchStreak(); ensureQuests();
   const boss = BOSSES[String(unit)];
@@ -467,8 +492,9 @@ function lockIn(sure) {
   } else if (!isRight) {
     $("qCard").classList.remove("shake"); void $("qCard").offsetWidth;
     $("qCard").classList.add("shake");
-    // re-ask later this session (spaced a few questions out), once
-    if (!item.requeued) {
+    // re-ask later this session (spaced a few questions out), once — practice only;
+    // gauntlet keeps moving, the miss still lands in the review queue for later
+    if (session.mode === "practice" && !item.requeued) {
       const clone = { id: item.id, review: true, requeued: true };
       session.queue.splice(Math.min(session.i + 4, session.queue.length), 0, clone);
     }
@@ -522,6 +548,27 @@ function endSession(early) {
       <h2>Readiness Report</h2>
       ${body}
       <button class="big-btn primary" onclick="closeModal(); showView('home'); renderHome();">To the map ➜</button>`);
+    return;
+  }
+
+  if (session.mode === "gauntlet") {
+    const ms = Date.now() - session.startMs;
+    const mm = Math.floor(ms / 60000), ss = String(Math.floor(ms / 1000) % 60).padStart(2, "0");
+    const cleared = st.right >= GAUNTLET_SIZE - 1;
+    const speed = cleared && ms <= GAUNTLET_PAR_MS;
+    if (cleared) grantXP(25, "gauntlet");
+    if (speed) grantXP(15, "speed demon");
+    if (cleared) { confetti(140); sfx("level"); }
+    modal(`
+      <div class="big-emoji">${cleared ? (speed ? "⚡" : "🌀") : "🌪️"}</div>
+      <h2>${cleared ? (speed ? "SPEED DEMON!" : "Gauntlet cleared!") : "Gauntlet survived"}</h2>
+      <div class="modal-stats">
+        <div>${st.right}/${GAUNTLET_SIZE}<span>score</span></div>
+        <div>${mm}:${ss}<span>time</span></div>
+        <div>+${st.xp + (cleared ? 25 : 0) + (speed ? 15 : 0)}<span>XP</span></div>
+      </div>
+      <p>${cleared ? "Mixed questions, no warning what's coming — exactly the skill the final exam tests." : "Misses are queued for review. Run it back."}</p>
+      <button class="big-btn primary" onclick="closeModal(); showView('home'); renderHome();">Back to the map ➜</button>`);
     return;
   }
 
@@ -604,6 +651,14 @@ function renderHome() {
     banner.querySelector("#diagRetake").onclick = startDiag;
   }
 
+  const gb = $("gauntletBanner");
+  if (todayStr() >= GAUNTLET_UNLOCK) {
+    gb.innerHTML = `<button class="big-btn" style="background:linear-gradient(135deg,var(--blue),#2f5fd0);color:#fff;margin-top:10px" id="gauntletBtn">🌀 GAUNTLET MODE<small>${GAUNTLET_SIZE} random questions vs the clock — clear 7 for +25 XP</small></button>`;
+    gb.querySelector("#gauntletBtn").onclick = startGauntlet;
+  } else {
+    gb.innerHTML = `<div style="text-align:center;color:var(--dim);font-size:12px;margin-top:8px">🔒 <b>GAUNTLET MODE</b> unlocks July 22 — week 4. Something new arrives right when you'll need it.</div>`;
+  }
+
   const due = dueReviews().length;
   $("reviewDue").textContent = due ? `🧹 ${due} review${due > 1 ? "s" : ""} due — they pay +15 XP each and go first` : (S.cliffhanger || "");
   $("smartSub").textContent = due ? `${due} due reviews, then your weakest unit` : "reviews first, then your weakest unit";
@@ -638,6 +693,22 @@ function renderHome() {
   grid.querySelectorAll("[data-boss]").forEach(b => (b.onclick = () => startBoss(+b.dataset.boss)));
 
   $("totalsLine").textContent = `${S.totals.correct}/${S.totals.answered} lifetime correct · best streak ${S.bestStreak} 🔥 · 208 questions in the arsenal`;
+}
+
+/* ---------------- theme ---------------- */
+function currentTheme() {
+  if (S.theme) return S.theme;
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
+function applyTheme() {
+  const t = currentTheme();
+  document.body.classList.toggle("light", t === "light");
+  const btn = $("themeBtn");
+  if (btn) btn.textContent = t === "light" ? "☀️" : "🌙";
+}
+function toggleTheme() {
+  S.theme = currentTheme() === "light" ? "dark" : "light";
+  save(); applyTheme();
 }
 
 /* ---------------- views, modal, toasts ---------------- */
@@ -708,13 +779,33 @@ function sfx(kind) {
 /* ---------------- wiring ---------------- */
 window.closeModal = closeModal;
 document.addEventListener("DOMContentLoaded", () => {
-  load(); ensureQuests();
+  load(); ensureQuests(); applyTheme();
   $("smartBtn").onclick = () => startPractice(weakestUnit());
   $("lockSure").onclick = () => lockIn(true);
   $("lockUnsure").onclick = () => lockIn(false);
   $("nextBtn").onclick = nextQuestion;
   $("quitBtn").onclick = () => { endSession(true); };
   $("muteBtn").onclick = () => { S.muted = !S.muted; save(); renderHome(); };
+  $("themeBtn").onclick = toggleTheme;
+  // arcade keyboard controls: 1-4 / a-d pick, Enter = lock in sure, U = lock in unsure,
+  // Enter/Space = next when feedback is showing
+  document.addEventListener("keydown", (e) => {
+    if (!session || $("quiz").classList.contains("hidden") || !$("modal").classList.contains("hidden")) return;
+    const k = e.key.toLowerCase();
+    if (session.answered) {
+      if (k === "enter" || k === " ") { e.preventDefault(); nextQuestion(); }
+      return;
+    }
+    const idx = ["1", "2", "3", "4"].indexOf(k) !== -1 ? ["1", "2", "3", "4"].indexOf(k)
+              : ["a", "b", "c", "d"].indexOf(k);
+    if (idx !== -1) {
+      const btn = $("qOptions").children[idx];
+      if (btn) btn.click();
+      return;
+    }
+    if (k === "enter" && session.picked !== null) { e.preventDefault(); lockIn(true); }
+    if (k === "u" && session.picked !== null) lockIn(false);
+  });
   $("resetBtn").onclick = () => {
     if (confirm("Wipe ALL progress (XP, streak, mastery)? This cannot be undone.")) {
       localStorage.removeItem(SAVE_KEY); load(); ensureQuests(); renderHome();

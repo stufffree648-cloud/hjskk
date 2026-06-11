@@ -5,13 +5,16 @@ July 1 – August 18, 2026, Prof. Deanne Stigliano.
 
 ## 🎮 THE GAME — play it now
 
-**▶️ Live at: https://stufffree648-cloud.github.io/hjskk/** (auto-deployed from
-`main` by GitHub Actions — bookmark it, or "Add to Home Screen" on your phone to
-install it as an app). Instant-play mirrors if Pages is still building:
+**▶️ PLAY INSTANTLY (no setup):**
 https://raw.githack.com/stufffree648-cloud/hjskk/main/mat-124-statistics/game/index.html
 
-Local option: open `game/index.html` in any browser (double-click the file, or
-`cd game && python3 -m http.server`).
+**Permanent home (one-time switch):** go to repo **Settings → Pages → Source:
+"GitHub Actions"** — that's it. The included workflow then auto-deploys every
+update to **https://stufffree648-cloud.github.io/hjskk/** ("Add to Home Screen"
+on your phone to install it as an app). GitHub requires a human to flip that
+switch once; automation isn't allowed to.
+
+Local option: open `game/index.html` in any browser.
 
 What's in it: all **298 verified questions** · XP & 8 ranks (Data Rookie →
 Statistician Supreme) · **10 animated boss battles** (The Biased Pollster → The

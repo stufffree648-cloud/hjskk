@@ -241,6 +241,42 @@ https://onlinelibrary.wiley.com/doi/10.1111/jcal.12385) — hence the scheduled 
 mechanic drop. Largest learning effects occur at 1–3 month durations (Bai et al. 2020) —
 bracketing this 7-week course.
 
+## 9. Section-specific intel (third research pass, June 11, 2026)
+
+Five agents: Sullivan 7e structure, MyLab mechanics, Stigliano reviews, CCM logistics,
+practice materials. Actionable synthesis lives in `course-intel.md`; key verdicts:
+
+- **Sullivan 7e structure [HIGH confidence]:** 15 chapters, 4 parts; correlation/
+  regression is Ch 4 (early, descriptive) with inference at Ch 14; proportions before
+  means in Ch 9–10; standard semester = Ch 1–12 (Fundamentals-of-Statistics edit confirms
+  the cut list). TOC cross-confirmed via Pearson catalog, test-bank listings, and the
+  author's own data repo (https://github.com/sullystats/Stats7e — Ch1–Ch15 folders,
+  section-numbered files incl. 10_2B/10_3A splits). Pearson 7e page:
+  https://www.pearson.com/en-us/subject-catalog/p/statistics-informed-decisions-using-data/P200000011711/9780138317409
+- **SullyStats free resources [HIGH]:** chapter-test video solutions (by hand/TI-84/
+  StatCrunch/Excel) at https://sullystats.com/statistics-videos/; classroom-note packets
+  Ch 1–14 at https://sullystats.com/classroom-notes/; all exercise data at
+  https://sullystats.github.io/Stats7e/.
+- **MyLab mechanics [HIGH, from Pearson docs]:** View an Example penalty-free without
+  regeneration; Similar Exercise replaces homework scores until due date
+  (https://support.pearson.com/getsupport/s/article/XL-MyLabs-Attempts-Per-Question-and-Tries-Within-Each-Question);
+  tests pull re-randomized items from the same bank; full formatting checklist in
+  `course-intel.md` §3 (rounding source: https://www.drdawnwright.com/rounding-in-mystatlab/).
+- **Stigliano reviews [HIGH on repeated fragments]:** RMP 4.1/5, 51 ratings, 76% would
+  take again (https://www.ratemyprofessors.com/professor/1766779); "study guide that
+  looks exactly like the test"; tests out of 20, no partial credit, no exam feedback,
+  test-heavy; syllabus advises 9–12 hrs/wk; responsive by email.
+- **CCM logistics [HIGH unless noted]:** LMS is Blackboard (courses.ccm.edu) NOT Canvas;
+  A = 93–100 (https://catalog.ccm.edu/credit/academicinformation/gradingsystem/);
+  W-deadline ≈ Aug 4, 2026 [MEDIUM-HIGH]; no separate finals week; no public
+  Respondus/Honorlock license — Testing Center LRC 102 proctors when required [MEDIUM];
+  Pearson 14-day temporary access
+  (https://support.pearson.com/getsupport/s/article/How-to-enroll-using-Temporary-Access);
+  free Brainfuse 24/7 tutoring + Tutoring Center DH-156
+  (https://www.ccm.edu/student-support/tutoring-academic-support/).
+- **Practice materials [HIGH]:** LA Mission College Math 227 posted Sullivan-keyed exams
+  with keys (URLs in `course-intel.md` §5); ~275 Quizlet sets by Sullivan chapter.
+
 ## 7. Open items (to resolve after July 1, 2026)
 
 1. Pull the real section syllabus: grade breakdown, exam count/dates, proctoring rules,

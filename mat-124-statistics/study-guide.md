@@ -1,11 +1,16 @@
 # MAT-124 Statistics — Master Study Guide
 
 **Course:** 26SU7W Statistics (MAT-124-56143), County College of Morris
-**Term:** 7-week summer session, **July 1 – August 18, 2026**
+**Term:** 7-week summer session, **July 1 – August 18, 2026** (LMS: **Blackboard**, courses.ccm.edu; W-deadline ≈ Aug 4; **A = 93–100** at CCM)
 **Instructor:** Deanne Stigliano (Associate Professor, Assistant Math Dept. Chair)
 **Textbook (likely):** Sullivan, *Statistics: Informed Decisions Using Data*, 7th ed. (Pearson) with **MyLab Statistics** online homework
 **Calculator policy (verified):** TI-84 or below ONLY — no TI-Nspire, no Casio
-**Intel from student reviews:** homework is on MyLab ("Mathlab"); tests/quizzes are out of 20 points with **NO PARTIAL CREDIT** — exact answers and exact rounding matter.
+**Intel from student reviews:** homework is on MyLab ("Mathlab"); tests/quizzes are out of 20 points with **NO PARTIAL CREDIT**; **no feedback returned on exams**; she provides a **study guide that mirrors the test**; budget 9–12+ hrs/week.
+
+**➡️ See `course-intel.md` for the full section-specific playbook:** Sullivan chapter map
+(NOTE: correlation/regression comes EARLY, in Ch 4), the author's free chapter-test
+solution videos at sullystats.com, the MyLab never-lose-a-point checklist, CCM dates,
+free tutoring, and the revised week-by-week battle plan in Sullivan chapter order.
 
 **Official course outcomes (from the CCM master syllabus):**
 1. Distinguish/formulate methods of random sampling for data collection and inference
@@ -36,17 +41,22 @@ and mixes in old-unit questions (interleaving).
 
 ---
 
-## Suggested 7-week schedule (adjust to the real syllabus once it opens July 1)
+## 7-week schedule — REVISED to Sullivan chapter order (see course-intel.md §6)
 
-| Week | Dates | Units | Danger level |
-|------|-------|-------|-------------|
-| 1 | Jul 1–7 | U1 Data & Sampling, U2 Descriptive Stats | warm-up — bank these points |
-| 2 | Jul 8–14 | U3 Probability | medium (conditional probability) |
-| 3 | Jul 15–21 | U4 Discrete/Binomial, start U5 Normal | medium |
-| 4 | Jul 22–28 | U5 Normal + **CLT** | **HIGHEST** — most-failed topic in intro stats |
-| 5 | Jul 29–Aug 4 | U6 Confidence Intervals, start U7 | **HIGH** (interpretation traps) |
-| 6 | Aug 5–11 | U7 Hypothesis Testing, U8 Two-sample/Chi-square | **HIGH** (p-value logic) |
-| 7 | Aug 12–18 | U9 Regression + cumulative final review | final likely worth 20–30% |
+⚠️ Sullivan's book (and therefore the course) does **correlation/regression in Chapter 4 —
+week 2**, before probability. Unit 9's descriptive half moves up; only the
+inference-on-slope part stays at the end.
+
+| Week | Dates | Sullivan chapters | Units | Danger level |
+|------|-------|-------------------|-------|-------------|
+| 0 | pre-July 1 | Ch 1–3 preview | U1, U2 | free points — bank them early |
+| 1 | Jul 1–7 | Ch 1–2 + syllabus recon | U1, U2 | warm-up |
+| 2 | Jul 8–14 | Ch 3–4 | U2 + **U9 descriptive** (scatterplots, r, regression line, r²) | medium |
+| 3 | Jul 15–21 | Ch 5–6 | U3 Probability, U4 Binomial | medium (conditional probability) |
+| 4 | Jul 22–28 | Ch 7–8 | U5 Normal + **CLT** | **HIGHEST** — most-failed topic in intro stats |
+| 5 | Jul 29–Aug 4 | Ch 9 (proportion FIRST, then mean) | U6 Confidence Intervals | **HIGH** (interpretation traps) |
+| 6 | Aug 5–11 | Ch 10–11 | U7 Hypothesis Testing, U8 Two-sample | **HIGH** (p-value logic) |
+| 7 | Aug 12–18 | Ch 12/14.1–14.2 if covered + review | U8 chi-square, U9 inference, cumulative | final exam window |
 
 ---
 

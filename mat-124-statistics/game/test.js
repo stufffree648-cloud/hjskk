@@ -212,6 +212,9 @@ console.log("EXAM SIMULATOR — silent run, review at end");
 let unitForge = true;
 for (let i = 0; i < 60; i++) { const q = T.forgeQuestion([6, 7]); if (!q || ![6, 7].includes(q.unit)) { unitForge = false; break; } }
 check("unit-targeted forge respects filter", unitForge);
+let dpForge = true;
+for (let i = 0; i < 60; i++) { const q = T.forgeQuestion([2, 3]); if (!q || ![2, 3].includes(q.unit)) { dpForge = false; break; } }
+check("Data+Prob forge templates exist and respect filter", dpForge);
 T.startExam();
 check("exam queue is 20", T.getSession().queue.length === 20);
 let g2 = 0;

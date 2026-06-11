@@ -76,6 +76,7 @@ function freshState() {
     questDate: "", quests: [],
     totals: { answered: 0, correct: 0 },
     cliffhanger: null,
+    diagDone: null,
     muted: false,
   };
 }
@@ -210,6 +211,7 @@ function allQById() {
   const map = {};
   for (const q of BANK) map[q.id] = q;
   for (const k of Object.keys(BOSSES)) for (const q of BOSSES[k].questions) map[q.id] = q;
+  for (const q of DIAG) map[q.id] = q;
   return map;
 }
 let _qbyid = null;
@@ -316,6 +318,36 @@ function startPractice(unit) {
   showView("quiz"); renderQuestion();
 }
 
+const SKILL_FIX = {
+  fractions: "Khan Academy → Arithmetic → Fractions unit (~2h). Highest-yield fix in all of stats prep.",
+  percents: "Khan Academy → Pre-algebra → Percentages unit (~1h). Every p-value and probability is one of these.",
+  decimals: "Khan Academy → Arithmetic → Decimals unit (~45min). Train the p-value-vs-α comparison.",
+  negatives: "Khan Academy → Negative numbers unit + retype −3² vs (−3)² on the TI-84 until they make sense.",
+  parentheses: "Order-of-operations drills + retype 12/(6/36) on the TI-84. Parentheses discipline = free exam points.",
+  equations: "Khan Academy → Algebra basics → Linear equations (~1h). 'Solve the z-formula for x' is the whole game.",
+  roots: "Khan Academy → Roots & exponents (~30min). Estimate before you compute — it catches calculator slips.",
+  formulas: "Drill the SD recipe (item 10) and SE = σ/√n on paper twice, then on the TI-84 until hand and calculator agree.",
+  notation: "Quick review: inequality wording ('at least' = ≥) + scientific-notation display (E-4). 15 minutes, done.",
+};
+
+function startDiag() {
+  touchStreak(); ensureQuests();
+  session = {
+    queue: DIAG.map(q => ({ id: q.id, review: false })), i: 0, mode: "diag",
+    picked: null, answered: false,
+    stats: { right: 0, wrong: 0, xp: 0 }, diagMisses: [],
+  };
+  $("quizTitle").textContent = "🧪 Readiness Check";
+  $("bossBar").classList.add("hidden");
+  showView("quiz"); renderQuestion();
+  modal(`
+    <div class="big-emoji">🧪</div>
+    <h2>Readiness Check</h2>
+    <p>15 quick questions on the basic math that research shows actually decides stats grades (hint: it's NOT algebra II).</p>
+    <p>Misses cost nothing — each one comes with an exact, targeted fix. Find the gaps now, before the course can.</p>
+    <button class="big-btn primary" onclick="closeModal()">Begin 🔍</button>`);
+}
+
 function startBoss(unit) {
   touchStreak(); ensureQuests();
   const boss = BOSSES[String(unit)];
@@ -399,11 +431,28 @@ function lockIn(sure) {
   opts[correctPos].classList.add("correct");
   if (!isRight) opts[session.picked].classList.add("wrong");
 
-  const res = recordAnswer(q, isRight, sure, !!item.review);
+  let res;
+  if (session.mode === "diag") {
+    // diagnostic items don't enter the spaced-repetition deck
+    const xp = isRight ? 10 : 2;
+    grantXP(xp, q.id);
+    if (!isRight || !sure) session.diagMisses.push(q.skill);
+    res = { xp, msgs: isRight ? [] : ["🔎 gap found — that's the point of this check"] };
+    S.totals.answered++; if (isRight) S.totals.correct++;
+    questEvent("q10"); if (isRight) questEvent("c8");
+    save();
+  } else {
+    res = recordAnswer(q, isRight, sure, !!item.review);
+  }
   session.stats[isRight ? "right" : "wrong"]++;
   session.stats.xp += res.xp;
 
-  if (session.mode === "boss") {
+  if (session.mode === "diag") {
+    if (!isRight) {
+      $("qCard").classList.remove("shake"); void $("qCard").offsetWidth;
+      $("qCard").classList.add("shake");
+    }
+  } else if (session.mode === "boss") {
     if (isRight) {
       session.boss.score++; session.boss.hp--;
       $("bossFace").classList.remove("hit"); void $("bossFace").offsetWidth;
@@ -453,6 +502,28 @@ function endSession(early) {
   if (acc >= 95 && st.right + st.wrong >= 8) diffNote = "Near-perfect — these were too easy for you. Next session steps UP.";
   else if (acc >= 75) diffNote = "Right in the 85% sweet spot where learning is fastest. Perfect.";
   else if (st.right + st.wrong > 0) diffNote = "Tough one — every miss is now scheduled to come back until it's yours. That's the system working.";
+
+  if (session.mode === "diag") {
+    const score = st.right;
+    S.diagDone = { score, date: todayStr() };
+    save();
+    const weak = [...new Set(session.diagMisses)];
+    let body;
+    if (!weak.length && score === 15) {
+      body = `<p><b>15/15 — your math foundation is exam-ready.</b> Nothing stands between you and the stats itself. Straight to Unit 1.</p>`;
+      confetti(160); sfx("level");
+    } else {
+      body = `<p><b>${score}/15.</b> ${score >= 13 ? "Strong foundation — just patch these before July 1:" : "Good news: everything below is 6th–8th-grade material, fixable in a weekend. Patch list:"}</p>
+        <div style="text-align:left">${weak.map(s => `<p>🔧 <b>${s}</b> — ${SKILL_FIX[s]}</p>`).join("")}</div>
+        <p style="color:var(--dim);font-size:12px">In a randomized trial, students who failed algebra placement still passed college stats at higher rates than students sent to remedial algebra. The gaps are patchable.</p>`;
+    }
+    modal(`
+      <div class="big-emoji">${score >= 13 ? "🟢" : "🟡"}</div>
+      <h2>Readiness Report</h2>
+      ${body}
+      <button class="big-btn primary" onclick="closeModal(); showView('home'); renderHome();">To the map ➜</button>`);
+    return;
+  }
 
   if (session.mode === "boss") {
     const b = session.boss;
@@ -523,6 +594,15 @@ function renderHome() {
     ql.appendChild(div);
   }
   $("questBonus").textContent = S.quests.every(q => q.done) ? "— chest claimed 🎁" : "(+10 XP each · all 3 = +20 chest)";
+
+  const banner = $("diagBanner");
+  if (!S.diagDone) {
+    banner.innerHTML = `<button class="big-btn" style="background:linear-gradient(135deg,var(--purple),#7a4ddb);color:#fff;margin-top:10px" id="diagBtn">🧪 READINESS CHECK<small>15 quick questions — find your math gaps before the course opens</small></button>`;
+    banner.querySelector("#diagBtn").onclick = startDiag;
+  } else {
+    banner.innerHTML = `<div style="text-align:center;color:var(--dim);font-size:12px;margin-top:8px">🧪 readiness: ${S.diagDone.score}/15 (${S.diagDone.date}) · <button class="link-btn" id="diagRetake">retake</button></div>`;
+    banner.querySelector("#diagRetake").onclick = startDiag;
+  }
 
   const due = dueReviews().length;
   $("reviewDue").textContent = due ? `🧹 ${due} review${due > 1 ? "s" : ""} due — they pay +15 XP each and go first` : (S.cliffhanger || "");

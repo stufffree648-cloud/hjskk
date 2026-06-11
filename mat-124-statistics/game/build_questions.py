@@ -150,10 +150,65 @@ for q in bank + boss_qs:
     letters[q['answer']] += 1
 print(f"answer letter balance A/B/C/D: {letters}")
 
+# Readiness diagnostic (from performance-protocol.md §3, converted to MCQ).
+# Skills: the 6th-8th-grade gaps that research shows actually sink stats students.
+DIAG = [
+    {"id": "D1", "skill": "percents", "stem": "<p>Write 0.3% as a decimal.</p>",
+     "options": ["0.03", "0.003", "0.3", "0.0003"], "answer": 1,
+     "expl": "Percent means ÷100: 0.3% = 0.3/100 = 0.003. This exact conversion shows up in every p-value and probability."},
+    {"id": "D2", "skill": "percents", "stem": "<p>A lottery has a 1% chance of winning per ticket. About how many winners among 1,000 players?</p>",
+     "options": ["1", "100", "50", "10"], "answer": 3,
+     "expl": "1% of 1,000 = 0.01 × 1000 = 10. (Only ~80% of highly-educated adults get this one right.)"},
+    {"id": "D3", "skill": "fractions", "stem": "<p>Which is larger: 4/7 or 5/8?</p>",
+     "options": ["5/8", "4/7", "they are equal", "impossible to tell without a calculator"], "answer": 0,
+     "expl": "5/8 = 0.625 vs 4/7 ≈ 0.571. Community-college students get fraction comparisons right only ~70% of the time — chance is 50%."},
+    {"id": "D4", "skill": "fractions", "stem": "<p>Compute 1/2 ÷ 2/3.</p>",
+     "options": ["1/3", "3", "3/4", "4/3"], "answer": 2,
+     "expl": "Dividing by a fraction = multiply by its reciprocal: (1/2)(3/2) = 3/4. 38% of intro-stats students miss this exact item. (1/3 is the multiply-instead trap.)"},
+    {"id": "D5", "skill": "decimals", "stem": "<p>True or false: 0.049 &lt; 0.05.</p>",
+     "options": ["true", "false", "they are equal", "it depends on rounding"], "answer": 0,
+     "expl": "0.049 < 0.050. This IS the p-value-vs-α comparison — the single most consequential decimal judgment in the course."},
+    {"id": "D6", "skill": "negatives", "stem": "<p>−3² equals:</p>",
+     "options": ["9", "−9", "6", "−6"], "answer": 1,
+     "expl": "Exponents come before negation: −3² = −(3²) = −9, while (−3)² = 9. The TI-84 follows this rule and it's a documented top calculator error."},
+    {"id": "D7", "skill": "parentheses", "stem": "<p>Compute 12 ÷ (6 ÷ 36).</p>",
+     "options": ["0.056", "2", "18", "72"], "answer": 3,
+     "expl": "Inside first: 6/36 = 1/6, and 12 ÷ (1/6) = 72. Typed without parentheses, 12/6/36 = 0.056 — the classic stats-formula calculator disaster (it's the t-statistic error in disguise)."},
+    {"id": "D8", "skill": "formulas", "stem": "<p>Compute z = (68 − 74)/4.</p>",
+     "options": ["1.5", "−6", "−1.5", "0.67"], "answer": 2,
+     "expl": "(68−74) = −6, then −6/4 = −1.5. Negative z just means below the mean — you'll compute this a hundred times in Unit 5."},
+    {"id": "D9", "skill": "equations", "stem": "<p>Solve for x: 1.96 = (x − 100)/15.</p>",
+     "options": ["101.96", "129.4", "70.6", "96.1"], "answer": 1,
+     "expl": "Multiply both sides by 15: 29.4 = x − 100, so x = 129.4. This is literally “solve the z-formula for x” — the only algebra move intro stats demands."},
+    {"id": "D10", "skill": "formulas", "stem": "<p>For the data {2, 4, 9}, the sample standard deviation s = √(Σ(x−x̄)²/(n−1)) is closest to:</p>",
+     "options": ["√13 ≈ 3.61", "√8.67 ≈ 2.94", "13", "26"], "answer": 0,
+     "expl": "x̄ = 5; deviations −3, −1, 4; squares 9+1+16 = 26; 26/(3−1) = 13; s = √13 ≈ 3.61. (2.94 divides by n instead of n−1.) This one item rehearses ~80% of the course's hand computation."},
+    {"id": "D11", "skill": "roots", "stem": "<p>√40 lies between which two whole numbers?</p>",
+     "options": ["4 and 5", "5 and 6", "20 and 21", "6 and 7"], "answer": 3,
+     "expl": "6² = 36 and 7² = 49, so √40 is between 6 and 7 (≈6.32). Estimating roots was one of the five skills that significantly predicted stats grades."},
+    {"id": "D12", "skill": "formulas", "stem": "<p>SE = σ/√n with σ = 20 and n = 25. SE = ?</p>",
+     "options": ["0.8", "100", "4", "20"], "answer": 2,
+     "expl": "√25 = 5, then 20/5 = 4. (0.8 divides by n; 20 forgets to divide at all — the future SD-vs-SE trap.)"},
+    {"id": "D13", "skill": "notation", "stem": "<p>Your calculator displays <code>2.3E-4</code>. As a decimal, that is:</p>",
+     "options": ["2.30004", "0.00023", "23000", "0.0023"], "answer": 1,
+     "expl": "E-4 means ×10⁻⁴: move the decimal 4 places left → 0.00023. Misreading E-notation as ≈2.3 is a documented exam-point killer for tiny p-values."},
+    {"id": "D14", "skill": "percents", "stem": "<p>40 of 250 survey respondents said yes. The proportion who said yes is:</p>",
+     "options": ["0.16", "6.25", "1.6", "0.62"], "answer": 0,
+     "expl": "40/250 = 0.16 (which is 16%). Counts → proportion → percent is the p̂ pipeline you'll use in every inference chapter."},
+    {"id": "D15", "skill": "notation", "stem": "<p>“x is at least 30” written in symbols is:</p>",
+     "options": ["x &gt; 30", "x &lt; 30", "x ≤ 30", "x ≥ 30"], "answer": 3,
+     "expl": "“At least” includes the boundary: x ≥ 30 (and yes, “at least 2” includes 2). Hypothesis-test setups live and die on this wording."},
+]
+dl = [0, 0, 0, 0]
+for q in DIAG:
+    dl[q["answer"]] += 1
+print(f"diagnostic: {len(DIAG)} items, letter balance {dl}")
+
 out = (
     '// Auto-generated by build_questions.py from question-bank.md + boss-battles.md\n'
     f'const BANK = {json.dumps(bank, ensure_ascii=False)};\n'
     f'const BOSSES = {json.dumps({str(k): {"name": boss_names.get(k, "Boss"), "questions": v} for k, v in bosses.items()}, ensure_ascii=False)};\n'
+    f'const DIAG = {json.dumps(DIAG, ensure_ascii=False)};\n'
 )
 (ROOT / 'game' / 'questions.js').write_text(out, encoding='utf-8')
 print(f"wrote questions.js ({len(out)//1024} KB)")

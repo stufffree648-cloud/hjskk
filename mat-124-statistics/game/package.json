@@ -1,0 +1,12 @@
+{
+  "name": "climb-100",
+  "private": true,
+  "description": "The Climb to 100 — MAT-124 Statistics quiz RPG",
+  "scripts": {
+    "test": "node test.js",
+    "browser-test": "node browser-test.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  }
+}

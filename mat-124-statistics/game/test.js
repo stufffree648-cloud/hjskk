@@ -95,7 +95,7 @@ const travel = d => { NOW += d * 86400000; };
 
 /* ---------------- load the game ---------------- */
 const qsrc = fs.readFileSync("questions.js", "utf8");
-let gsrc = fs.readFileSync("game.js", "utf8").replace('"use strict";', "");
+let gsrc = fs.readFileSync("game.js", "utf8");  // keep "use strict" — the browser runs strict
 let T;
 eval(qsrc + "\n" + gsrc + `
 ; T = { startPractice, startBoss, startDaily, startQuickFive, startBookDrill, startDiag, startGauntlet,

@@ -1342,7 +1342,7 @@ function renderHome() {
   cs.onclick = showCampaign;
 
   const act = nextAction();
-  $("smartBtn").innerHTML = `${act.label}<small>${act.sub}</small>`;
+  $("smartBtn").innerHTML = `${act.label}<small id="smartSub">${act.sub}</small>`;
   $("smartBtn").onclick = act.run;
   $("smartBtn").style.fontSize = "20px";
 
@@ -1382,7 +1382,6 @@ function renderHome() {
 
   const due = dueReviews().length;
   $("reviewDue").textContent = due ? `🧹 ${due} review${due > 1 ? "s" : ""} due — they pay +15 XP each and go first` : (S.cliffhanger || "");
-  $("smartSub").textContent = due ? `${due} due reviews, then your weakest unit` : "reviews first, then your weakest unit";
 
   const grid = $("unitGrid"); grid.innerHTML = "";
   const clears = Object.keys(S.bossCleared).filter(k => k !== "10").length;
@@ -1542,7 +1541,10 @@ function toast(text, gold) {
 
 /* ---------------- confetti ---------------- */
 function confetti(n) {
-  const cv = $("fx"), ctx = cv.getContext("2d");
+  const cv = $("fx");
+  let ctx = null;
+  try { ctx = cv.getContext && cv.getContext("2d"); } catch (e) { /* canvas blocked */ }
+  if (!ctx) return;   // privacy blockers can null this out — skip the sparkle, never break the game
   cv.width = innerWidth; cv.height = innerHeight;
   const colors = ["#ffce3a", "#3ddc84", "#5aa7ff", "#b98aff", "#ff5d6c"];
   const ps = Array.from({ length: n }, () => ({

@@ -426,7 +426,8 @@ function dueReviews() {
 }
 
 /* ---------------- answer processing (the learning engine) ---------------- */
-function recordAnswer(q, correctPick, sure, isReviewDue) {
+const FLUENCY_MS = 75000;  // correct-but-slower-than-this isn't exam-ready yet
+function recordAnswer(q, correctPick, sure, isReviewDue, isSlow) {
   const st = qstate(q.id);
   const today = todayStr();
   S.totals.answered++;
@@ -469,12 +470,14 @@ function recordAnswer(q, correctPick, sure, isReviewDue) {
       dropLoot(false);
     }
 
-    if (sure) {
+    if (sure && !isSlow) {
       st.stage = Math.min(st.stage + 1, 3);
       st.due = st.stage >= 3 ? null : addDays(today, REVIEW_GAPS[st.stage - 1]);
     } else {
-      st.due = addDays(today, 1);     // unsure-correct decays fast — see it tomorrow
-      msgs.push("🤔 logged as unsure — it'll come back tomorrow");
+      st.due = addDays(today, 1);     // unsure or slow correct decays fast — see it tomorrow
+      msgs.push(sure
+        ? "🐢 right, but slow — only automatic answers survive exam pressure; fluency rep tomorrow"
+        : "🤔 logged as unsure — it'll come back tomorrow");
     }
     st.lastWrong = false;
   } else {
@@ -699,6 +702,31 @@ const FORGE = [
       options: [pct(r * r), pct(Math.abs(r)), pct(1 - r * r), pct(Math.abs(r) / 2)], answer: 0,
       expl: `r² = (${r})² = ${(r * r).toFixed(2)} → ${pct(r * r)}. (Reading r itself as the percent is the #1 regression error.)` };
   },
+  function sampleid() {
+    const k = ri(8, 25), g = ri(4, 9), m = ri(10, 25);
+    const v = pk([
+      { s: `Every ${k}th caller to a help line is surveyed.`, a: "systematic", d: ["simple random", "cluster", "convenience"], e: "Every kth individual = systematic sampling." },
+      { s: `${m} students are randomly selected from EACH of the college's ${g} academic departments.`, a: "stratified", d: ["cluster", "systematic", "simple random"], e: "Some members from EVERY group (strata) = stratified. Cluster would take ALL members of a FEW groups." },
+      { s: `${g} city blocks are chosen at random and EVERY household on those blocks is interviewed.`, a: "cluster", d: ["stratified", "systematic", "convenience"], e: "Whole randomly-chosen groups, fully surveyed = cluster. Stratified would sample some households from every block." },
+      { s: `A reporter interviews the first ${m * 2} people entering the mall.`, a: "convenience", d: ["simple random", "voluntary response", "systematic"], e: "Whoever is easiest to reach = convenience sampling — biased no matter the count." },
+      { s: `A talk show asks viewers to text their vote; ${m * 1000} responses arrive.`, a: "voluntary response", d: ["convenience", "simple random", "cluster"], e: "Self-selected responders = voluntary response; size never fixes self-selection bias." },
+      { s: `Numbers are drawn so that every possible group of ${m} employees has an equal chance of selection.`, a: "simple random", d: ["systematic", "stratified", "cluster"], e: "Every possible SAMPLE equally likely = the definition of simple random sampling." },
+    ]);
+    return { unit: 1, stem: `<p>${v.s} The sampling method is:</p>`,
+      options: [v.a, ...v.d], answer: 0, expl: v.e };
+  },
+  function statpar() {
+    const n = ri(50, 400) , N = pk([5000, 12000, 30000]), val = ri(20, 80);
+    const isStat = Math.random() < 0.5;
+    const stem = isStat
+      ? `<p>From a random sample of ${n} of a city's ${N.toLocaleString("en-US")} households, the average weekly grocery bill is $${val}. The number $${val} is:</p>`
+      : `<p>A census of ALL ${N.toLocaleString("en-US")} households in a city finds the average weekly grocery bill is $${val}. The number $${val} is:</p>`;
+    const right = isStat ? "a statistic — it was computed from a sample" : "a parameter — it describes the entire population";
+    const wrong = isStat ? "a parameter — it describes the entire population" : "a statistic — it was computed from a sample";
+    return { unit: 1, stem,
+      options: [right, wrong, "a margin of error", "a census adjustment"], answer: 0,
+      expl: isStat ? `Computed from the ${n}-household sample → statistic (it estimates the population parameter).` : "Computed from every member of the population (a census) → parameter." };
+  },
   function meanmed() {
     const m = ri(8, 20), offs = [-5, -2, 1, 2, 4];
     const data = offs.map(o => m + o).sort(() => Math.random() - 0.5);
@@ -884,12 +912,15 @@ function startBoss(unit) {
   if (!boss) return;
   let queue = boss.questions.map(q => ({ id: q.id, review: false }));
   // rematch freshness: a cleared boss regenerates — half its arsenal is forged anew
-  if (S.bossCleared[unit] && unit !== 10 && FORGE.some(g => g.unitTag === unit)) {
-    const originals = [...queue].sort(() => Math.random() - 0.5).slice(0, 5);
+  // (the Dragon draws its forged half from across the whole course)
+  const canForge = unit === 10 || FORGE.some(g => g.unitTag === unit);
+  if (S.bossCleared[unit] && canForge) {
+    const keep = Math.floor(queue.length / 2);
+    const originals = [...queue].sort(() => Math.random() - 0.5).slice(0, keep);
     const forged = [];
     let guard = 0;
-    while (forged.length < 5 && guard++ < 30) {
-      const q = forgeQuestion([unit]);
+    while (forged.length < queue.length - keep && guard++ < 80) {
+      const q = forgeQuestion(unit === 10 ? null : [unit]);
       if (q) forged.push({ id: q.id, review: false, q });
     }
     queue = [...originals, ...forged].sort(() => Math.random() - 0.5);
@@ -957,6 +988,7 @@ function renderQuestion() {
   });
   $("lockRow").classList.add("hidden");
   $("feedback").classList.add("hidden");
+  session.qStart = Date.now();
 }
 
 function pick(pos, btn) {
@@ -1000,7 +1032,8 @@ function lockIn(sure) {
     questEvent("q10"); if (isRight) questEvent("c8");
     save();
   } else {
-    res = recordAnswer(q, isRight, sure, !!item.review);
+    const isSlow = Date.now() - (session.qStart || Date.now()) > FLUENCY_MS;
+    res = recordAnswer(q, isRight, sure, !!item.review, isSlow);
   }
   session.stats[isRight ? "right" : "wrong"]++;
   session.stats.xp += res.xp;

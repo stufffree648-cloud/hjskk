@@ -83,13 +83,24 @@ global.prompt = () => promptPayload;
 global.matchMedia = () => ({ matches: false });
 global.scrollTo = () => {};
 
+/* ---------------- controllable clock: lets tests fast-forward days ---------------- */
+const RealDate = Date;
+let NOW = new RealDate("2026-06-11T12:00:00Z").getTime();
+class FakeDate extends RealDate {
+  constructor(...a) { if (a.length) super(...a); else super(NOW); }
+  static now() { return NOW; }
+}
+global.Date = FakeDate;
+const travel = d => { NOW += d * 86400000; };
+
 /* ---------------- load the game ---------------- */
 const qsrc = fs.readFileSync("questions.js", "utf8");
 let gsrc = fs.readFileSync("game.js", "utf8").replace('"use strict";', "");
 let T;
 eval(qsrc + "\n" + gsrc + `
 ; T = { startPractice, startBoss, startDaily, startQuickFive, startBookDrill, startDiag, startGauntlet,
-  startForge, forgeQuestion, ncdf, startExam, showVideos,
+  startForge, forgeQuestion, ncdf, startExam, showVideos, endSession,
+  reset: () => { localStorage.removeItem(SAVE_KEY); load(); ensureQuests(); },
   lockIn, nextQuestion, renderHome, touchStreak, recordAnswer, dueReviews, byId, bookEntries,
   getS: () => S, getSession: () => session, getOptOrder: () => optOrder, levelFor, unitPower, masteredCount };
 `);
@@ -272,6 +283,89 @@ check("daily banner shows done state", ids.dailyBanner._html.includes("daily cha
 check("book banner present", ids.bookBanner._html.includes("BLACK BOOK"));
 check("badges grid populated", ids.badgeGrid.children.length >= 15);
 check("heatmap painted", ids.heatGrid.children.length > 60);
+
+console.log("TIME TRAVEL — SRS lifecycle (1d → 3d → mastered)");
+T.reset();
+const qid = "U1-Q1";
+T.touchStreak();
+T.recordAnswer(T.byId(qid), true, true, false);
+let stq = T.getS().perQ[qid];
+check("stage 1 scheduled for tomorrow", stq.stage === 1 && stq.due !== null);
+travel(1);
+check("review surfaces next day", T.dueReviews().includes(qid));
+T.recordAnswer(T.byId(qid), true, true, true);
+check("stage 2 after second success", T.getS().perQ[qid].stage === 2);
+travel(2);
+check("not due before the 3-day gap elapses", !T.dueReviews().includes(qid));
+travel(1);
+check("due after the full 3-day gap", T.dueReviews().includes(qid));
+const resM = T.recordAnswer(T.byId(qid), true, true, true);
+check("mastered on 3rd distinct day with +25 bonus", T.masteredCount() === 1 && resM.msgs.join(" ").includes("MASTERED"));
+
+console.log("TIME TRAVEL — streak, freezes, earn-back, month reset");
+T.reset();
+T.touchStreak();
+travel(1); T.touchStreak();
+check("consecutive day increments streak", T.getS().streak === 2);
+travel(3); T.touchStreak();
+check("two freezes bridge a 2-day gap", T.getS().streak === 3 && T.getS().freezesUsed === 2);
+T.getS().streak = 6;
+T.getS().perQ["U2-Q1"] = { tc: 0, tw: 1, stage: 0, due: null, days: [], everWrong: true, lastWrong: false };
+travel(4);
+T.getS().perQ["U2-Q1"].due = new Date(NOW).toISOString().slice(0, 10);
+T.touchStreak();
+check("earn-back arms when gap exceeds freezes", !!T.getS().earnBack && T.getS().streak === 1);
+T.recordAnswer(T.byId("U2-Q1"), true, true, true);
+check("chain restored by clearing the due review", T.getS().streak === 7 && !T.getS().earnBack);
+travel(25); T.touchStreak();
+check("freezes refill on the new month", T.getS().freezesUsed === 0 && T.getS().freezeMonth.startsWith("2026-07"));
+
+console.log("TIME TRAVEL — daily resets & the 12-review backlog cap");
+T.reset();
+const qd1 = T.getS().questDate;
+travel(1); T.renderHome();
+check("daily quests regenerate on a new day", T.getS().questDate !== qd1);
+const capDay = new Date(NOW).toISOString().slice(0, 10);
+for (let i = 1; i <= 10; i++) {
+  T.getS().perQ["U3-Q" + i] = { tc: 0, tw: 1, stage: 0, due: capDay, days: [], everWrong: true, lastWrong: false };
+  T.getS().perQ["U4-Q" + i] = { tc: 0, tw: 1, stage: 0, due: capDay, days: [], everWrong: true, lastWrong: false };
+}
+check("backlog flattens to the 12/day cap", T.dueReviews().length === 12);
+
+console.log("MONKEY FUZZ — 500 random actions across time");
+T.reset();
+let fuzzErr = null;
+const fuzzUnits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const starts = [
+  () => T.startPractice(fuzzUnits[Math.floor(Math.random() * 10)]),
+  () => T.startDaily(), () => T.startGauntlet(), () => T.startForge(),
+  () => T.startDiag(), () => T.startBoss(fuzzUnits[Math.floor(Math.random() * 10)]),
+  () => T.startExam(), () => T.startBookDrill(), () => T.startQuickFive(),
+];
+try {
+  for (let i = 0; i < 500; i++) {
+    const r = Math.random();
+    const sess = T.getSession();
+    const active = sess && sess.i < sess.queue.length && !sess.answered;
+    if (active && r < 0.6) {
+      answer(Math.random() < 0.7, Math.random() < 0.8);
+      const s2 = T.getSession();
+      if (s2 && s2.answered && s2.i < s2.queue.length) T.nextQuestion();
+    } else if (r < 0.7) {
+      starts[Math.floor(Math.random() * starts.length)]();
+    } else if (r < 0.8 && sess) {
+      T.endSession(true);
+    } else if (r < 0.9) {
+      travel(Math.floor(Math.random() * 3)); T.touchStreak(); T.renderHome();
+    } else {
+      global.closeModal(); T.renderHome();
+    }
+    const S2 = T.getS();
+    if (!Number.isFinite(S2.xp) || S2.xp < 0 || S2.streak < 0) throw new Error("state invariant broke at op " + i);
+    JSON.stringify(S2);
+  }
+} catch (e) { fuzzErr = e; }
+check("500-op fuzz: no crashes, invariants hold" + (fuzzErr ? " — " + (fuzzErr.stack || fuzzErr.message).split("\n").slice(0, 3).join(" | ") : ""), !fuzzErr);
 
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

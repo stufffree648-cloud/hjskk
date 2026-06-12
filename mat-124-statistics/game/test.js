@@ -332,6 +332,27 @@ for (let i = 1; i <= 10; i++) {
 }
 check("backlog flattens to the 12/day cap", T.dueReviews().length === 12);
 
+console.log("FLUENCY GATE + UNIT-1 FORGE + DRAGON REGEN");
+T.reset();
+let u1ok = true;
+for (let i = 0; i < 40; i++) { const q = T.forgeQuestion([1]); if (!q || q.unit !== 1) { u1ok = false; break; } }
+check("unit 1 forge templates generate valid scenarios", u1ok);
+const slowRes = T.recordAnswer(T.byId("U5-Q1"), true, true, false, true);
+const slowSt = T.getS().perQ["U5-Q1"];
+check("slow-correct gets a next-day fluency rep instead of advancing", slowRes.msgs.join(" ").includes("slow") && slowSt.stage === 0 && slowSt.due !== null);
+const fastRes = T.recordAnswer(T.byId("U5-Q2"), true, true, false, false);
+check("fast-correct still advances the ladder", T.getS().perQ["U5-Q2"].stage === 1);
+T.getS().bossCleared[1] = true;
+T.startBoss(1);
+check("Pollster rematch now regenerates", T.getSession().queue.filter(it => it.q).length >= 3);
+T.endSession(true); global.closeModal();
+T.getS().bossCleared[10] = true;
+T.startBoss(10);
+const dq = T.getSession().queue;
+check("Dragon rematch: 20 questions, half forged from across the course", dq.length === 20 && dq.filter(it => it.q).length >= 8);
+finishSession(true);
+check("forged Dragon rematch clears end-to-end", ids.modalCard._html.includes("DEFEATED"));
+
 console.log("MONKEY FUZZ — 500 random actions across time");
 T.reset();
 let fuzzErr = null;

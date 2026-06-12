@@ -316,6 +316,7 @@ function awardBadges() {
 function touchStreak() {
   const today = todayStr();
   if (S.freezeMonth !== monthStr()) { S.freezeMonth = monthStr(); S.freezesUsed = 0; }
+  if (S.earnBack && S.earnBack.date !== today) S.earnBack = null;  // the repair window is same-day only
   if (S.lastPlay === today) return;
   if (S.lastPlay === null) {
     S.streak = 1; toast("🔥 Day 1. The chain begins.");
@@ -1504,6 +1505,24 @@ function toggleTheme() {
   save(); applyTheme();
 }
 
+function showHandbook() {
+  modal(`
+    <div class="big-emoji">📖</div>
+    <h2>The Handbook</h2>
+    <div style="text-align:left;font-size:13.5px;line-height:1.7">
+    <p>▶️ <b>PLAY</b> always knows your best next move — when in doubt, press it.</p>
+    <p>📺 <b>Watch</b> a unit's videos → <b>Train</b> it → at 50% power its 📜 <b>scroll</b> (formula sheet) unlocks → at 80% its <b>boss</b> awakens. Beat all bosses, slay the 🐉 Dragon.</p>
+    <p>🧠 <b>Misses are never lost</b> — they return later that session, then at 1, 3, and 7 days until mastered (3 correct on different days). Capped at 12 reviews/day so the backlog can't crush you. 🐢 Slow-but-right answers get a fluency rep — exams demand automatic.</p>
+    <p>🗓️ <b>Daily Challenge</b>: today's 10, one attempt, 8+ = 👑 +30. ⚡ One secret <b>lucky question</b> pays double every day. 🌀 <b>Gauntlet</b> unlocks July 22.</p>
+    <p>🎓 <b>Exam Simulator</b>: 20 questions, zero feedback until the end — train like you'll be tested. 🔨 <b>The Forge</b>: infinite fresh-numbered problems, targetable by topic.</p>
+    <p>📕 <b>Black Book</b>: every question that ever beat you; drill it for ⚔️ revenge (+20). 🔥 <b>Streak</b>: one question/day keeps it; 2 monthly 🧊 freezes; a blown chain can be ⛓️ earned back same-day by clearing reviews.</p>
+    <p>🏔️ <b>The Climb</b> (the dots up top) is the long game: 12 milestones to the summit. 📜 Daily quests, 🏆 trophies, 🎯 combos, and loot handle the short game.</p>
+    <p>💾 <b>Export your save weekly</b> (footer) — and 📋 <b>copy progress report</b> to paste to your AI tutor for targeted teaching.</p>
+    <p>⌨️ 1–4 answer · Enter lock in · U = unsure · Enter/Space next.</p>
+    </div>
+    <button class="big-btn primary" onclick="closeModal()">Got it ➜</button>`);
+}
+
 /* ---------------- views, modal, toasts ---------------- */
 function showView(v) {
   $("home").classList.toggle("hidden", v !== "home");
@@ -1581,6 +1600,7 @@ document.addEventListener("DOMContentLoaded", () => {
   $("quitBtn").onclick = () => { endSession(true); };
   $("muteBtn").onclick = () => { S.muted = !S.muted; save(); renderHome(); };
   $("themeBtn").onclick = toggleTheme;
+  $("handbookBtn").onclick = showHandbook;
   // arcade keyboard controls: 1-4 / a-d pick, Enter = lock in sure, U = lock in unsure,
   // Enter/Space = next when feedback is showing
   document.addEventListener("keydown", (e) => {

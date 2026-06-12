@@ -99,7 +99,7 @@ let gsrc = fs.readFileSync("game.js", "utf8").replace('"use strict";', "");
 let T;
 eval(qsrc + "\n" + gsrc + `
 ; T = { startPractice, startBoss, startDaily, startQuickFive, startBookDrill, startDiag, startGauntlet,
-  startForge, forgeQuestion, ncdf, startExam, showVideos, endSession,
+  startForge, forgeQuestion, ncdf, startExam, showVideos, endSession, showHandbook,
   reset: () => { localStorage.removeItem(SAVE_KEY); load(); ensureQuests(); },
   lockIn, nextQuestion, renderHome, touchStreak, recordAnswer, dueReviews, byId, bookEntries,
   getS: () => S, getSession: () => session, getOptOrder: () => optOrder, levelFor, unitPower, masteredCount };
@@ -396,6 +396,15 @@ const camp = T.getS().campaign;
 check("First Step milestone fires on the first answer", !!camp.step1);
 check("campaign strip renders with progress", (T.renderHome(), ids.campaignStrip._html.includes("THE CLIMB")));
 T.endSession(true); global.closeModal();
+
+console.log("STALE EARN-BACK + HANDBOOK");
+T.reset();
+T.getS().earnBack = { oldStreak: 9, date: "2026-05-01", needed: 3, cleared: 0 };
+T.touchStreak();
+check("stale earn-back offer expires (same-day window only)", T.getS().earnBack === null);
+T.showHandbook();
+check("handbook modal renders the systems guide", ids.modalCard._html.includes("PLAY") && ids.modalCard._html.includes("Black Book"));
+global.closeModal();
 
 console.log("THEME INTEGRITY — every CSS var used is defined");
 const css = fs.readFileSync("style.css", "utf8");

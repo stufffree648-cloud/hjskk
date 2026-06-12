@@ -8,8 +8,8 @@ try { ({ JSDOM } = require("jsdom")); }
 catch { console.log("jsdom not installed — run: npm install"); process.exit(2); }
 
 const html = fs.readFileSync("index.html", "utf8")
-  .replace('<script src="questions.js"></script>', "")
-  .replace('<script src="game.js"></script>', "");
+  .replace(/<script src="questions\.js[^"]*"><\/script>/, "")
+  .replace(/<script src="game\.js[^"]*"><\/script>/, "");
 const dom = new JSDOM(html, { url: "https://example.com/game/", runScripts: "outside-only", pretendToBeVisual: true });
 const w = dom.window;
 w.matchMedia = w.matchMedia || (() => ({ matches: false }));

@@ -1,6 +1,6 @@
 /* Climb 100 service worker — network-first with cache fallback (offline play) */
-const CACHE = "climb100-v10";
-const ASSETS = ["./", "./index.html", "./style.css", "./game.js", "./questions.js", "./manifest.webmanifest", "./icon.svg"];
+const CACHE = "climb100-v11";
+const ASSETS = ["./", "./index.html", "./style.css?v=11", "./game.js?v=11", "./questions.js?v=11", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));

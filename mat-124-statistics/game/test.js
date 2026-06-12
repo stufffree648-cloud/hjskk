@@ -388,5 +388,27 @@ try {
 } catch (e) { fuzzErr = e; }
 check("500-op fuzz: no crashes, invariants hold" + (fuzzErr ? " — " + (fuzzErr.stack || fuzzErr.message).split("\n").slice(0, 3).join(" | ") : ""), !fuzzErr);
 
+console.log("CAMPAIGN — milestones award in play");
+T.reset();
+T.startPractice(1);
+answer(true);
+const camp = T.getS().campaign;
+check("First Step milestone fires on the first answer", !!camp.step1);
+check("campaign strip renders with progress", (T.renderHome(), ids.campaignStrip._html.includes("THE CLIMB")));
+T.endSession(true); global.closeModal();
+
+console.log("THEME INTEGRITY — every CSS var used is defined");
+const css = fs.readFileSync("style.css", "utf8");
+const rootBlock = css.match(/:root \{([\s\S]*?)\}/)[1];
+const defined = new Set([...rootBlock.matchAll(/--([\w-]+):/g)].map(m => m[1]));
+const lightBlock = css.match(/body\.light \{([\s\S]*?)\}/)[1];
+const lightDefs = new Set([...lightBlock.matchAll(/--([\w-]+):/g)].map(m => m[1]));
+const usedIn = css + fs.readFileSync("game.js", "utf8") + fs.readFileSync("index.html", "utf8");
+const used = new Set([...usedIn.matchAll(/var\(--([\w-]+)/g)].map(m => m[1]));
+const undef = [...used].filter(v => !defined.has(v));
+check("all used CSS variables are defined in :root" + (undef.length ? " — missing: " + undef.join(",") : ""), undef.length === 0);
+const orphanLight = [...lightDefs].filter(v => !defined.has(v));
+check("light theme only overrides known variables", orphanLight.length === 0);
+
 console.log(`\nRESULT: ${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

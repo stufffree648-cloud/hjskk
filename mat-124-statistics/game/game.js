@@ -93,7 +93,8 @@ function freshState() {
     cliffhanger: null,
     diagDone: null,
     badges: {},                       // id -> date earned
-    counters: { revenge: 0, maxCombo: 0 },
+    campaign: {},                     // milestone id -> date reached
+    counters: { revenge: 0, maxCombo: 0, reviewsCleared: 0, crowns: 0 },
     history: {},                      // date -> {a: answered, c: correct, xp}
     luckyDate: null,                  // date the daily lucky question was claimed
     daily: null,                      // {date, score, streak} for the Daily Challenge
@@ -241,6 +242,41 @@ function showVideos(u) {
     <button class="big-btn primary" onclick="closeModal()">Back ➜</button>`);
 }
 
+/* ---------------- the campaign: 12 milestones to the summit ---------------- */
+const CAMPAIGN = [
+  { id: "step1", icon: "👣", name: "First Step", desc: "Answer your first question", xp: 10, check: s => s.totals.answered >= 1 },
+  { id: "scout", icon: "🧪", name: "Scout the Mountain", desc: "Finish the Readiness Check", xp: 15, check: s => !!s.diagDone },
+  { id: "camp1", icon: "⛺", name: "Camp I", desc: "Reach 100 XP", xp: 15, check: s => s.xp >= 100 },
+  { id: "sweep", icon: "🧹", name: "Debt Free", desc: "Clear 5 due reviews", xp: 15, check: s => (s.counters.reviewsCleared || 0) >= 5 },
+  { id: "crown", icon: "👑", name: "Crowned", desc: "Win a Daily Crown (8+/10)", xp: 20, check: s => (s.counters.crowns || 0) >= 1 },
+  { id: "scroll", icon: "📜", name: "First Scroll", desc: "Push any unit to 50% power", xp: 20, check: () => [1, 2, 3, 4, 5, 6, 7, 8, 9].some(u => unitPower(u) >= 0.5) },
+  { id: "blood", icon: "⚔️", name: "First Blood", desc: "Defeat a boss", xp: 25, check: s => Object.keys(s.bossCleared).length >= 1 },
+  { id: "camp2", icon: "🏕️", name: "Camp II", desc: "Reach Level 4 (1,100 XP)", xp: 25, check: s => s.xp >= 1100 },
+  { id: "burn", icon: "🔥", name: "The Long Burn", desc: "Reach a 7-day streak", xp: 25, check: s => s.bestStreak >= 7 },
+  { id: "dress", icon: "🎓", name: "Dress Rehearsal", desc: "Score 18+/20 in the Exam Simulator", xp: 30, check: s => (s.counters.examBest || 0) >= 18 },
+  { id: "ridge", icon: "🏹", name: "The High Ridge", desc: "Defeat six bosses", xp: 30, check: s => Object.keys(s.bossCleared).filter(k => k !== "10").length >= 6 },
+  { id: "summit", icon: "🏔️", name: "THE SUMMIT", desc: "Slay the Final Exam Dragon", xp: 100, check: s => !!s.bossCleared[10] },
+];
+function checkCampaign() {
+  for (const c of CAMPAIGN) {
+    if (!S.campaign[c.id] && c.check(S)) {
+      S.campaign[c.id] = todayStr();
+      grantXP(c.xp, "campaign");
+      toast(`🏔️ MILESTONE: ${c.icon} ${c.name} — ${c.desc} (+${c.xp} XP)`, true);
+      sfx("quest");
+    }
+  }
+  save();
+}
+function showCampaign() {
+  const rows = CAMPAIGN.map(c => {
+    const done = S.campaign[c.id];
+    return `<p style="text-align:left;${done ? "" : "opacity:.55"}">${done ? "✅" : c.icon} <b>${c.name}</b> — ${c.desc} <span style="color:var(--dim)">(+${c.xp} XP${done ? " · " + done : ""})</span></p>`;
+  }).join("");
+  modal(`<div class="big-emoji">🏔️</div><h2>THE CLIMB — ${CAMPAIGN.filter(c => S.campaign[c.id]).length}/12</h2>${rows}
+    <button class="big-btn primary" onclick="closeModal()">Onward ➜</button>`);
+}
+
 /* ---------------- trophies ---------------- */
 function masteredCount() {
   return Object.values(S.perQ).filter(st => st.days && st.days.length >= 3).length;
@@ -273,6 +309,7 @@ function awardBadges() {
     }
   }
   save();
+  checkCampaign();
 }
 
 /* ---------------- streak (forgiving by design) ---------------- */
@@ -446,6 +483,7 @@ function recordAnswer(q, correctPick, sure, isReviewDue, isSlow) {
     else if (wasMastered && !isReviewDue) { xp += 2; msgs.push("+2 (already mastered)"); }
     else if (isReviewDue) {
       xp += 15; msgs.push("🧹 review cleared +15"); questEvent("rev3");
+      S.counters.reviewsCleared = (S.counters.reviewsCleared || 0) + 1;
       if (S.earnBack && S.earnBack.date === today) {
         S.earnBack.cleared++;
         if (S.earnBack.cleared >= S.earnBack.needed) {
@@ -1177,7 +1215,7 @@ function endSession(early) {
     S.daily = { date: today, score: st.right, streak: dStreak };
     S.counters.dailies = (S.counters.dailies || 0) + 1;
     const crowned = st.right >= 8;
-    if (crowned) { grantXP(30, "daily crown"); confetti(150); sfx("level"); }
+    if (crowned) { grantXP(30, "daily crown"); confetti(150); sfx("level"); S.counters.crowns = (S.counters.crowns || 0) + 1; }
     save(); awardBadges();
     modal(`
       <div class="big-emoji">${crowned ? "👑" : "🗓️"}</div>
@@ -1293,6 +1331,14 @@ function renderHome() {
     ql.appendChild(div);
   }
   $("questBonus").textContent = S.quests.every(q => q.done) ? "— chest claimed 🎁" : "(+10 XP each · all 3 = +20 chest)";
+
+  const cs = $("campaignStrip");
+  const campDone = CAMPAIGN.filter(c => S.campaign[c.id]).length;
+  const campNext = CAMPAIGN.find(c => !S.campaign[c.id]);
+  cs.innerHTML = `
+    <div class="camp-dots">${CAMPAIGN.map(c => `<span class="dot ${S.campaign[c.id] ? "done" : (campNext && c.id === campNext.id ? "cur" : "")}" title="${c.name}">${S.campaign[c.id] || (campNext && c.id === campNext.id) ? c.icon : "·"}</span>`).join("")}</div>
+    <div class="camp-next">🏔️ THE CLIMB ${campDone}/12 ${campNext ? `· next: <b>${campNext.name}</b> — ${campNext.desc} (+${campNext.xp} XP)` : "· SUMMIT REACHED — you are ready for 100"}</div>`;
+  cs.onclick = showCampaign;
 
   const act = nextAction();
   $("smartBtn").innerHTML = `${act.label}<small>${act.sub}</small>`;

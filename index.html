@@ -10,10 +10,17 @@
   <body class="theme-light">
     <main class="app">
       <header class="topbar">
-        <h1>MSTR BTC Holdings Per Share</h1>
-        <label class="switch-row" for="theme-toggle">
-          <span>Dark mode</span>
-          <input id="theme-toggle" type="checkbox" />
+        <div class="title">
+          <h1>Strategy (MSTR) — Bitcoin Per Share</h1>
+          <p class="subtitle" id="subtitle"></p>
+        </div>
+        <label class="switch-row" for="theme-toggle" title="Toggle dark / light mode">
+          <span>☀️</span>
+          <span class="switch">
+            <input id="theme-toggle" type="checkbox" />
+            <span class="slider-knob"></span>
+          </span>
+          <span>🌙</span>
         </label>
       </header>
 
@@ -35,17 +42,45 @@
         </label>
 
         <label>
-          Shares you own
-          <input id="owned-shares" type="number" min="0" step="1" value="0" />
+          Share basis
+          <select id="basis-select">
+            <option value="diluted" selected>Assumed diluted (official)</option>
+            <option value="basic">Basic (Class A+B)</option>
+          </select>
+        </label>
+
+        <label>
+          Your MSTR shares
+          <input id="owned-shares" type="number" min="0" step="1" value="0" placeholder="e.g. 100" />
         </label>
       </section>
 
-      <section class="stats" id="owned-stats">
-        Enter shares owned to estimate your BTC exposure.
+      <section class="stats">
+        <div class="stat">
+          <span class="stat-label">Total BTC held</span>
+          <span class="stat-value" id="stat-btc">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">BTC per share</span>
+          <span class="stat-value" id="stat-bps">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Sats per share</span>
+          <span class="stat-value" id="stat-sats">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Shares outstanding</span>
+          <span class="stat-value" id="stat-shares">—</span>
+        </div>
+      </section>
+
+      <section class="owned-panel" id="owned-stats">
+        Enter the number of MSTR shares you own to estimate your look-through BTC.
       </section>
 
       <section class="chart-wrap">
         <div id="chart" aria-label="MSTR BTC per share chart"></div>
+        <p class="hint">Scroll / pinch over the chart to zoom · drag the bar below to slide &amp; zoom a range.</p>
       </section>
 
       <footer class="footnote" id="footnote"></footer>

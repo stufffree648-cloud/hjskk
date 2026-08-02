@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Sec 6.1 — Discrete Random Variables: Complete Solutions</title>
+<style>
+  @page { size: letter; margin: 0.30in; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 8.6pt; line-height: 1.33; color: #1a2b33; }
+  .cols { column-count: 2; column-gap: 0.20in; column-fill: auto; }
+  h1 { font-size: 12.5pt; color: #ffffff; background: #17697a; padding: 5px 9px; border-radius: 4px; margin-bottom: 3px; }
+  .subtitle { font-size: 8.0pt; color: #444; margin-bottom: 5px; }
+  .card { break-inside: avoid; border: 0.8px solid #c9d6da; border-radius: 4px; padding: 5px 6px 5px 6px; margin-bottom: 5px; background: #fff; }
+  .qhead { font-size: 9.1pt; font-weight: bold; color: #0f5361; border-bottom: 1px solid #17697a; padding-bottom: 2px; margin-bottom: 3px; }
+  .qhead .tag { font-weight: normal; font-size: 7.6pt; color: #667; }
+  .concept { background: #f2f7f8; }
+  .step { margin: 2.5px 0; }
+  .step b.n { color: #0f5361; }
+  .ans { background: #e4f4e6; border: 0.8px solid #38a14b; border-radius: 3px; padding: 1px 4px; font-weight: bold; }
+  .why { color: #333; }
+  .trap { background: #fff6e3; border-left: 3px solid #e6a817; padding: 2px 5px; margin: 3px 0; font-size: 8.1pt; }
+  .trap b { color: #9a6c00; }
+  .sc { background: #e8f1fb; border-left: 3px solid #2f6fc2; padding: 2px 5px; margin: 3px 0; font-size: 8.1pt; }
+  .sc b { color: #1c4e94; }
+  table { border-collapse: collapse; margin: 3px auto; }
+  th, td { border: 0.8px solid #9fb4bb; padding: 1px 5px; text-align: center; font-size: 8.2pt; }
+  th { background: #dfeaee; }
+  td.sum { background: #e4f4e6; font-weight: bold; }
+  .formula { text-align: center; font-family: Georgia, "Times New Roman", serif; font-size: 8.6pt; margin: 2px 0; }
+  .small { font-size: 7.9pt; color: #445; }
+  ul { margin-left: 13px; }
+  li { margin: 1.5px 0; }
+  .playbook { background: #eef3e6; border: 1px solid #7a9a4d; }
+  .playbook .qhead { color: #4c6b1f; border-color: #7a9a4d; }
+  sup, sub { line-height: 0; }
+</style>
+</head>
+<body>
+
+<h1>Section 6.1 — Discrete Random Variables: Every Question Solved Step-by-Step</h1>
+<div class="subtitle">Covers HW 6.1.1, 6.1.3, 6.1.5, 6.1.19, 6.1.21, 6.1.25, 6.1.27, 6.1.30 &nbsp;•&nbsp; Read THE 4 FACTS box first — every answer below comes from it. Blue boxes = exact StatCrunch clicks (no typing expressions). Yellow boxes = traps that cost points. &nbsp;<b>⚠ MyLab shuffles answer letters between versions — always match by the wording/graph described, never by the letter.</b></div>
+
+<div class="cols">
+
+<div class="card concept">
+  <div class="qhead">THE 4 FACTS THAT SOLVE EVERYTHING</div>
+  <div class="step"><b class="n">1. Random variable (RV):</b> a <b>numerical measure of the outcome of a probability experiment</b> — a number whose value is determined by chance.</div>
+  <div class="step"><b class="n">2. Discrete vs. continuous:</b> ask <i>"Do I COUNT it or MEASURE it?"</i> Counted with gaps (0, 1, 2, …) → <b>discrete</b>. Measured on a scale where any decimal is possible (rain, time, weight) → <b>continuous</b>.</div>
+  <div class="step"><b class="n">3. Legal probability distribution — 2 rules:</b> every probability is between 0 and 1 <i>inclusive</i> (0 ≤ P(x) ≤ 1), and all probabilities add to exactly 1 (ΣP(x) = 1).</div>
+  <div class="step"><b class="n">4. Formulas:</b></div>
+  <div class="formula">μ<sub>X</sub> = Σ[x·P(x)] &nbsp;&nbsp;&nbsp; σ<sub>X</sub> = √( Σ[x²·P(x)] − μ<sub>X</sub>² )</div>
+  <div class="small">Mean = "multiply each value by its probability, add them up." You will let StatCrunch do both (recipe below) — but the multiply-and-add idea is what the mean IS.</div>
+</div>
+
+<div class="card sc" style="border:1px solid #2f6fc2;">
+  <div class="qhead" style="color:#1c4e94;border-color:#2f6fc2;">MASTER STATCRUNCH RECIPE (use on Q4–Q8)</div>
+  <div class="step"><b>1.</b> Type the x-values in <b>var1</b> and the probabilities P(x) in <b>var2</b> (one row per outcome).</div>
+  <div class="step"><b>2.</b> <b>Stat → Calculators → Custom</b>. Set <b>Values in: var1</b>, <b>Weights in: var2</b> → <b>Compute!</b></div>
+  <div class="step"><b>3.</b> The top of the window prints <b>Mean</b> (= μ<sub>X</sub>) and <b>Std. Dev.</b> (= σ<sub>X</sub>). Done — no formulas typed.</div>
+  <div class="step"><b>4.</b> For probabilities: in the same window use the <b>P(X ? x)</b> box — pick =, &lt;, ≤, &gt;, or ≥, type the value, Enter. It shades the bars and prints the answer.</div>
+  <div class="small">Frequencies instead of probabilities? The Weights column also accepts <i>raw frequencies</i> — StatCrunch rescales them automatically (see Q5). Money problems? Build the outcome table first (see Q6).</div>
+</div>
+
+<div class="card">
+  <div class="qhead">Q1 · 6.1.1 — "What is a random variable?" <span class="tag">definition</span></div>
+  <div class="step"><span class="ans">A — a numerical measure of the outcome of a probability experiment.</span></div>
+  <div class="step why"><b class="n">Why:</b> that's the definition (Fact 1), word for word. Its value is determined by chance.</div>
+  <div class="trap"><b>Trap:</b> B adds "plotted on a line in an uninterrupted fashion" → that defines a <i>continuous</i> RV only. C adds "a finite or countable number of values" → that defines a <i>discrete</i> RV only. The general definition has no such restriction — pick the plain one.</div>
+</div>
+
+<div class="card">
+  <div class="qhead">Q2 · 6.1.3 — Two requirements for a discrete probability distribution <span class="tag">select all</span></div>
+  <div class="step"><span class="ans">ΣP(x) = 1</span> &nbsp;and&nbsp; <span class="ans">0 ≤ P(x) ≤ 1</span> &nbsp;(choices C and D)</div>
+  <div class="step why"><b class="n">Why:</b> exactly Fact 3: probabilities each live between 0 and 1 <i>inclusive</i>, and together they must account for 100% of outcomes (sum = 1).</div>
+  <div class="trap"><b>Trap:</b> "ΣP(x) = 0" is nonsense (total probability is 1, not 0). "0 &lt; P(x) &lt; 1" is wrong because it's <i>strict</i>: a probability is allowed to equal 0 or 1, so the ≤ version is the correct rule.</div>
+</div>
+
+<div class="card">
+  <div class="qhead">Q3 · 6.1.5 — Discrete or continuous? <span class="tag">classify + list values</span></div>
+  <div class="step"><b class="n">(a) Number of people in a restaurant (capacity 100):</b> you <b>count</b> people → <span class="ans">discrete; x = 0, 1, 2, …, 100</span> (choice A)</div>
+  <div class="step why">Counts start at 0 and stop at the capacity 100; only whole numbers (no 2.5 people).</div>
+  <div class="step"><b class="n">(b) Inches of rain in City B during April:</b> you <b>measure</b> rain — 2.37 in. is possible → <span class="ans">continuous; r ≥ 0</span> (choice B)</div>
+  <div class="step why">Any value in an interval; can't be negative; no fixed upper limit.</div>
+  <div class="trap"><b>Trap:</b> in these answer choices, interval notation like "0 ≤ x ≤ 100" (<i>every real number</i> between 0 and 100) is reserved for continuous variables — a discrete answer is written as the list 0, 1, 2, …, 100. Match the notation style to your discrete/continuous choice.</div>
+</div>
+
+<div class="card">
+  <div class="qhead">Q4 · 6.1.19 — Baseball hits distribution <span class="tag">the full workout: verify, graph, μ, σ, probabilities</span></div>
+  <table>
+    <tr><th>x (hits)</th><th>P(x)</th><th>x·P(x)</th></tr>
+    <tr><td>0</td><td>0.1675</td><td>0.0000</td></tr>
+    <tr><td>1</td><td>0.3357</td><td>0.3357</td></tr>
+    <tr><td>2</td><td>0.2851</td><td>0.5702</td></tr>
+    <tr><td>3</td><td>0.1482</td><td>0.4446</td></tr>
+    <tr><td>4</td><td>0.0384</td><td>0.1536</td></tr>
+    <tr><td>5</td><td>0.0251</td><td>0.1255</td></tr>
+    <tr><td class="sum">Sum</td><td class="sum">1.0000</td><td class="sum">1.6296</td></tr>
+  </table>
+  <div class="step"><b class="n">(a) Verify it's a probability distribution:</b> check the 2 rules (Fact 3). Every P(x) here is between 0 and 1 ✓; add the P(x) column: 0.1675+0.3357+0.2851+0.1482+0.0384+0.0251 = <b>1.0000</b> ✓. <span class="ans">Fill-in: probabilities are between 0 and 1, inclusive, and the sum of the probabilities is 1.</span></div>
+  <div class="step"><b class="n">(b) Pick the correct graph:</b> the bar at each x must have height exactly P(x). Quick method: find the <b>largest</b> P — here 0.3357 at x = 1 — so the tallest bar must sit at x = 1, then heights step down: 0.2851, 0.1482, … <span class="ans">Graph C.</span> Shape: single peak (x = 1) = <span class="ans">one mode</span>; the long thin tail runs to the <i>right</i> (high x, tiny probabilities) → <span class="ans">skewed right</span>.</div>
+  <div class="step"><b class="n">(c) Mean:</b> multiply each x by its P(x) (3rd column) and add: <span class="ans">μ<sub>X</sub> = 1.6296 hits</span> (do NOT round — it said so). <b>Interpret</b> = choice <span class="ans">D</span>: "over the course of <b>many games</b>, one would expect the <b>mean</b> number of hits per game to be the mean of the random variable."</div>
+  <div class="trap"><b>Trap:</b> interpretation answers with "most games", "will equal", or "less than" are wrong. The mean is a <b>long-run average</b> (Law of Large Numbers): correct wording always = "many repetitions" + "average ≈ 1.6296." A player can't get 1.6296 hits in one game.</div>
+  <div class="step"><b class="n">(d) Standard deviation:</b> StatCrunch recipe → Std. Dev. = 1.1816… → <span class="ans">σ<sub>X</sub> ≈ 1.182 hits</span> (round 3 decimals as instructed).</div>
+  <div class="step"><b class="n">(e) P(exactly 2 hits):</b> "exactly" = read one row of the table: <span class="ans">P(2) = 0.2851</span>.</div>
+  <div class="step"><b class="n">(f) P(more than 1 hit):</b> "more than 1" means x = 2,3,4,5 (NOT 1). Add: 0.2851+0.1482+0.0384+0.0251 = <span class="ans">0.4968</span>. Shortcut: 1 − P(0) − P(1) = 1 − 0.1675 − 0.3357 = 0.4968. ✓</div>
+  <div class="sc"><b>StatCrunch:</b> x in var1, P(x) in var2 → Stat → Calculators → Custom → Values var1, Weights var2 → Compute. Read Mean = 1.6296, Std. Dev. = 1.182. For (e): P(X = 2); for (f): P(X &gt; 1) using the dropdown. Zero hand arithmetic.</div>
+</div>
+
+<div class="card">
+  <div class="qhead">Q5 · 6.1.21 — Games per series, 1923–2022 <span class="tag">frequencies → distribution → μ, σ</span></div>
+  <div class="step"><b class="n">Setup:</b> total series N = 18+23+25+33 = <b>99</b>.</div>
+  <div class="step"><b class="n">(a) Build P(x) = frequency ÷ N</b> (round to 4 decimals):</div>
+  <table>
+    <tr><th>x (games)</th><th>freq</th><th>P(x) = freq/99</th></tr>
+    <tr><td>4</td><td>18</td><td>18/99 = <b>0.1818</b></td></tr>
+    <tr><td>5</td><td>23</td><td>23/99 = <b>0.2323</b></td></tr>
+    <tr><td>6</td><td>25</td><td>25/99 = <b>0.2525</b></td></tr>
+    <tr><td>7</td><td>33</td><td>33/99 = <b>0.3333</b></td></tr>
+  </table>
+  <div class="step"><b class="n">(b) Graph:</b> heights must climb to the tallest bar at x = 7 (P = 0.3333): 0.18 → 0.23 → 0.25 → 0.33. <span class="ans">Graph D.</span></div>
+  <div class="step"><b class="n">(c) Mean:</b> μ = 4(0.1818)+5(0.2323)+6(0.2525)+7(0.3333) ≈ 5.74 → <span class="ans">μ<sub>X</sub> ≈ 5.7 games</span> (1 decimal). <b>Interpret</b> = choice <span class="ans">A</span>: "the series, if played <b>many times</b>, would be expected to last <b>about 5.7 games, on average</b>."</div>
+  <div class="step"><b class="n">(d) Standard deviation:</b> StatCrunch → <span class="ans">σ<sub>X</sub> ≈ 1.1 games</span> (1 decimal).</div>
+  <div class="sc"><b>StatCrunch:</b> put 4,5,6,7 in var1 and the <i>raw frequencies</i> 18,23,25,33 in var2 → Custom calculator → Mean 5.7, Std. Dev. 1.1 (it rescales weights automatically — no dividing needed for μ and σ). For part (a)'s table you still divide: do 18 ÷ 99 on a plain calculator and type the decimal <b>0.1818</b> into the answer box. Never type "18/99" into a StatCrunch cell — cells only accept plain numbers.</div>
+</div>
+
+<div class="card">
+  <div class="qhead">Q6 · 6.1.25 — Insurance expected value <span class="tag">$290,000 policy, $360 premium, P(survive) = 0.999544</span></div>
+  <div class="step"><b class="n">Step 1 — outcomes from the COMPANY's point of view</b> (this is the whole trick):</div>
+  <table>
+    <tr><th>Event</th><th>Company's profit x</th><th>P(x)</th></tr>
+    <tr><td>She survives</td><td>+$360 (keeps premium)</td><td>0.999544</td></tr>
+    <tr><td>She dies</td><td>360 − 290,000 = <b>−$289,640</b></td><td>1 − 0.999544 = <b>0.000456</b></td></tr>
+  </table>
+  <div class="step"><b class="n">Step 2 — expected value</b> = Σ x·P(x) = 360(0.999544) + (−289,640)(0.000456) = 359.84 − 132.08 = <span class="ans">$227.76</span>. <span class="small">Shortcut: E = 360 − 290,000(0.000456) = 360 − 132.24 = 227.76 — the shortcut uses the FULL payout 290,000 because the company keeps the $360 premium either way; don't mix it with the table's net −289,640.</span></div>
+  <div class="step"><b class="n">Step 3 — interpret</b> = choice <span class="ans">C</span>: "the insurance company expects to make a <b>profit of $227.76 on every</b> 20-year-old female it insures for <b>1 year</b>."</div>
+  <div class="trap"><b>Trap:</b> "maximum profit" / "minimum profit" / "1 month" are all wrong — expected value is an <b>average per policy per year</b>, not a max or a guarantee.</div>
+  <div class="sc"><b>StatCrunch:</b> var1 = 360 and −289640; var2 = 0.999544 and 0.000456 → Custom calculator → Mean = 227.76.</div>
+</div>
+
+<div class="card">
+  <div class="qhead">Q7 · 6.1.27 — Insurance standard deviation <span class="tag">$240,000 policy, $190 premium, E = $80.56 given</span></div>
+  <div class="step"><b class="n">Step 1 — same two-row table:</b> survives → +$190 with 0.999544; dies → 190 − 240,000 = <b>−$239,810</b> with 0.000456.</div>
+  <div class="step"><b class="n">Step 2 — σ by StatCrunch</b> (never by hand — the numbers are huge): Custom calculator → Std. Dev. = 5123.8 → <span class="ans">σ ≈ $5124</span> (nearest dollar).</div>
+  <div class="step"><b class="n">Step 3 — why so high?</b> = choice <span class="ans">C</span>: "because the value of the <b>payout is much larger than the value of the gain</b>." σ measures spread — the two outcomes (+190 vs −239,810) are ~$240,000 apart, so the spread is enormous even though a payout is very unlikely.</div>
+  <div class="trap"><b>Trap:</b> "probability of a payout is so low/high" explains why the <i>mean</i> is a small profit — it does NOT explain the spread. Distance between outcomes drives σ.</div>
+</div>
+
+<div class="card">
+  <div class="qhead">Q8 · 6.1.30 — Expected profit of an investment <span class="tag">3 outcomes</span></div>
+  <div class="step"><b class="n">Step 1 — outcome table</b> (losses are NEGATIVE x-values):</div>
+  <table>
+    <tr><th>Economy</th><th>x (profit)</th><th>P(x)</th><th>x·P(x)</th></tr>
+    <tr><td>Strong</td><td>+30,000</td><td>0.20</td><td>+6,000</td></tr>
+    <tr><td>Moderate</td><td>+20,000</td><td>0.60</td><td>+12,000</td></tr>
+    <tr><td>Recession</td><td>−30,000</td><td>0.20</td><td>−6,000</td></tr>
+  </table>
+  <div class="step"><b class="n">Step 2 — add the last column:</b> 6,000 + 12,000 − 6,000 = <span class="ans">E = $12,000</span>.</div>
+  <div class="step small">Sanity checks: probabilities sum to 0.20+0.60+0.20 = 1 ✓; answer must land between −30,000 and +30,000 ✓.</div>
+  <div class="sc"><b>StatCrunch:</b> var1 = 30000, 20000, −30000; var2 = 0.2, 0.6, 0.2 → Custom calculator → Mean = 12000.</div>
+</div>
+
+<div class="card playbook">
+  <div class="qhead">EXAM PLAYBOOK — how to replicate this on ANY 6.1 problem</div>
+  <ul>
+    <li><b>See a table of x and P(x)?</b> → StatCrunch Custom calculator immediately: gives μ, σ, and any P(X…) with zero formulas. "Exactly a" = one row; "more than a" excludes a; "at least a" includes a.</li>
+    <li><b>Verify a distribution?</b> → recite the 2 rules: each 0 ≤ P(x) ≤ 1, and ΣP(x) = 1 (add them up and show it). If YOU rounded the P(x)s, a sum of 0.9999 or 1.0001 still counts as 1 — that's rounding error, not an invalid distribution.</li>
+    <li><b>Given frequencies?</b> → P(x) = freq ÷ total, round as told, then proceed as above.</li>
+    <li><b>Pick a graph?</b> → match the tallest bar to the biggest P(x), then check each height. Peak near left with long right tail = skewed right; mirror = skewed left; ~symmetric = symmetric. Modes = number of peaks.</li>
+    <li><b>Money/insurance?</b> → 2-row profit table from the point of view the question names (these HW ask the COMPANY's): [+premium, P(survive)] and [premium − payout, 1 − P(survive)]. If asked from the BUYER's side, signs flip. Investments: list each profit (loss = negative) with its probability. Then Custom calculator.</li>
+    <li><b>Interpretation MCQ?</b> → the right answer always says "over MANY repetitions the AVERAGE is about μ." Kill any choice saying most / exactly / guaranteed / one trial / maximum / minimum / wrong time unit.</li>
+    <li><b>Rounding:</b> obey the blue on-screen instruction exactly ("do not round" vs "3 decimals" vs "nearest cent/dollar").</li>
+  </ul>
+</div>
+
+</div>
+</body>
+</html>
